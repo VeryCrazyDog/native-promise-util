@@ -1,36 +1,9 @@
-import { join } from 'path'
-
-class Student {
-  fullName: string;
-  constructor (public firstName: string, public middleInitial: string, public lastName: string) {
-    this.fullName = firstName + ' ' + middleInitial + ' ' + lastName + join(__dirname, 'test')
-  }
+// eslint-disable-next-line @typescript-eslint/promise-function-async
+function delay (ms: number): Promise<undefined> {
+  // eslint-disable-next-line @typescript-eslint/return-await
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-interface Person {
-  firstName: string
-  lastName: string
+export default {
+  delay
 }
-
-function greeter (person: Person): string {
-  return 'Hello, ' + person.firstName + ' ' + person.lastName
-}
-
-const user = new Student('Jane', 'M.', 'User')
-
-function test (person: Person): string {
-  const user1 = person
-  return user1.lastName + 'asd'
-}
-
-console.log(greeter(user), test(user))
-
-// declare const loggedInUsername: string
-
-// const users = [
-//   { name: 'Oby', age: 12 },
-//   { name: 'Heera', age: 32 }
-// ]
-
-// const loggedInUser = users.find(u => u.name === loggedInUsername)
-// console.log(loggedInUser.age)
