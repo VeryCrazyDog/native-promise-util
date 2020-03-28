@@ -7,7 +7,7 @@ import npu from '../index'
 // Private functions
 function expectExecTimeAround (t: ExecutionContext, startTime: [number, number], execTime: number): void {
   const ALLOW_RANGE = 50
-  const [,endNs] = process.hrtime(startTime)
+  const [, endNs] = process.hrtime(startTime)
   const endMs = endNs / 1000000
   t.true(endMs >= execTime, `Expect actual execution time ${endMs} greater than or equal to ${execTime}`)
   t.true(
@@ -31,18 +31,18 @@ test('delay(ms) should delay execution', async (t) => {
 
 test('delay(ms, null) should resolved to null', async (t) => {
   const input = null
-  const output = await npu.delay(1, input)
+  const output = await npu.delay<null>(1, input)
   t.is(output, input)
 })
 
 test('delay(ms, \'hello\') should resolved to \'hello\'', async (t) => {
   const input = 'hello'
-  const output = await npu.delay(1, input)
+  const output = await npu.delay<string>(1, input)
   t.is(output, input)
 })
 
-test('delay(ms, Promise) on string Promise should resolved to \'hello\'', async (t) => {
-  const output = await npu.delay(1, Promise.resolve({
+test('delay(ms, Promise) on string promise should resolved to \'hello\'', async (t) => {
+  const output = await npu.delay<{ id: number, key: string }>(1, Promise.resolve({
     id: 123,
     key: 'value'
   }))
@@ -52,16 +52,16 @@ test('delay(ms, Promise) on string Promise should resolved to \'hello\'', async 
   })
 })
 
-test('delay(ms, Promise) shall delay after Promise resolved', async (t) => {
+test('delay(ms, Promise) shall delay after promise resolved', async (t) => {
   const input = 'hello'
   const startTime = process.hrtime()
-  const delayJob = new Promise(resolve => {
+  const delayJob = new Promise<string>(resolve => {
     setTimeout(() => {
       expectExecTimeAround(t, startTime, 100)
       resolve(input)
     }, 100)
   })
-  const output = await npu.delay(200, delayJob)
+  const output = await npu.delay<string>(200, delayJob)
   expectExecTimeAround(t, startTime, 300)
   t.is(output, input)
 })
