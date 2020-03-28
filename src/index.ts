@@ -1,7 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/promise-function-async
-function delay (ms: number): Promise<undefined> {
-  // eslint-disable-next-line @typescript-eslint/return-await
-  return new Promise(resolve => setTimeout(resolve, ms))
+async function delay<T> (ms: number, value?: T | PromiseLike<T>): Promise<T | undefined> {
+  const result = await value
+  await new Promise(resolve => setTimeout(resolve, ms))
+  return result
 }
 
 export default {
