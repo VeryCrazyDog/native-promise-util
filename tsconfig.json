@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		// Linter checks
+		"noUnusedLocals": true,
+		// Strict checks
+		"strict": true,
+		// Project options
+		"target": "ES2018",
+		"module": "CommonJS",
+		"outDir": "./dist",
+		// Advanced
+		"forceConsistentCasingInFileNames": true
+	}
+}
