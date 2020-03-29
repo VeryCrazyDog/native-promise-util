@@ -1,6 +1,6 @@
 {
 	"name": "native-promise-util",
-	"version": "0.1.0-dev",
+	"version": "0.1.0",
 	"description": "Utility for working with native Promise",
 	"engines": {
 		"node": ">= 10.*"
