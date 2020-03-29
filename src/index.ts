@@ -2,14 +2,14 @@
  * Returns a promise that will be resolved to `undefined` after given `ms` milliseconds.
  * @param ms Time delay in milliseconds.
  */
-async function delay (ms: number): Promise<undefined>;
+export async function delay (ms: number): Promise<undefined>;
 
 /**
  * Returns a promise that will be resolved to `value` after given `ms` milliseconds.
  * @param ms Time delay in milliseconds.
  * @param value Value to be resolved to.
  */
-async function delay<T> (ms: number, value: T): Promise<T>;
+export async function delay<T> (ms: number, value: T): Promise<T>;
 
 /**
  * Returns a promise that will be fulfilled with the fulfillment value of the `value` promise
@@ -17,14 +17,10 @@ async function delay<T> (ms: number, value: T): Promise<T>;
  * @param ms Time delay in milliseconds.
  * @param value Promise like object to be fulfilled.
  */
-async function delay<T> (ms: number, value: PromiseLike<T>): Promise<T>;
+export async function delay<T> (ms: number, value: PromiseLike<T>): Promise<T>;
 
-async function delay<T> (ms: number, value?: T | PromiseLike<T>): Promise<T | undefined> {
+export async function delay<T> (ms: number, value?: T | PromiseLike<T>): Promise<T | undefined> {
   const result = await value
   await new Promise(resolve => setTimeout(resolve, ms))
   return result
-}
-
-export default {
-  delay
 }

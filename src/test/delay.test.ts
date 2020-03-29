@@ -2,7 +2,7 @@
 import test, { ExecutionContext } from 'ava'
 
 // Import module to be tested
-import npu from '../index'
+import { delay } from '../index'
 
 // Private functions
 function expectExecTimeAround (t: ExecutionContext, startTime: [number, number], execTime: number): void {
@@ -18,26 +18,26 @@ function expectExecTimeAround (t: ExecutionContext, startTime: [number, number],
 
 // Test cases
 test('delay(ms) should resolved to undefined', async (t) => {
-  const output = await npu.delay(1)
+  const output = await delay(1)
   t.is(output, undefined)
 })
 
 test('delay(ms) should delay execution', async (t) => {
   const DELAY = 200
   const startTime = process.hrtime()
-  await npu.delay(DELAY)
+  await delay(DELAY)
   expectExecTimeAround(t, startTime, DELAY)
 })
 
 test('delay(ms, null) should resolved to null', async (t) => {
   const input = null
-  const output = await npu.delay<null>(1, input)
+  const output = await delay<null>(1, input)
   t.is(output, input)
 })
 
 test('delay(ms, \'hello\') should resolved to \'hello\'', async (t) => {
   const input = 'hello'
-  const output = await npu.delay<string>(1, input)
+  const output = await delay<string>(1, input)
   t.is(output, input)
 })
 
@@ -46,7 +46,7 @@ test('delay(ms, Promise) on string promise should resolved to \'hello\'', async 
     id: number
     key: string
   }
-  const output = await npu.delay<KeyValuePair>(1, Promise.resolve({
+  const output = await delay<KeyValuePair>(1, Promise.resolve({
     id: 123,
     key: 'value'
   }))
@@ -65,7 +65,7 @@ test('delay(ms, Promise) shall delay after promise resolved', async (t) => {
       resolve(input)
     }, 100)
   })
-  const output = await npu.delay<string>(200, delayJob)
+  const output = await delay<string>(200, delayJob)
   expectExecTimeAround(t, startTime, 300)
   t.is(output, input)
 })
