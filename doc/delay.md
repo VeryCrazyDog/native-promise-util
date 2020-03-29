@@ -3,7 +3,7 @@
 ```js
 promiseUtil.delay(
 	ms: number,
-	value?: any | PromiseLike<any>
+	value?: Resolvable<any>
 ): Promise<any | undefined>
 ```
 

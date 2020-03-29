@@ -1,7 +1,5 @@
 {
 	"compilerOptions": {
-		// Linter checks
-		"noUnusedLocals": true,
 		// Strict checks
 		"strict": true,
 		// Project options

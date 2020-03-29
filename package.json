@@ -1,6 +1,6 @@
 {
 	"name": "native-promise-util",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"description": "Utility for working with native Promise",
 	"engines": {
 		"node": ">= 10.*"
@@ -38,7 +38,6 @@
 	"keywords": [
 		"promise",
 		"bluebird",
-		"map",
-		"filter"
+		"map"
 	]
 }
