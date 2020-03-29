@@ -124,8 +124,7 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
   const output: number[] = []
 
   const immediates: DelayPromiseInfo[] = []
-  // eslint-disable-next-line @typescript-eslint/promise-function-async
-  function immediate (index: number): Promise<any> {
+  async function immediate (index: number): Promise<any> {
     let resolveFunc: ResolveFunction = () => {}
     const promise = new Promise(resolve => {
       resolveFunc = resolve
@@ -135,13 +134,11 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
       resolve: resolveFunc,
       index
     })
-    // eslint-disable-next-line @typescript-eslint/return-await
-    return promise
+    return await promise
   }
 
   const lates: DelayPromiseInfo[] = []
-  // eslint-disable-next-line @typescript-eslint/promise-function-async
-  function late (index: number): Promise<any> {
+  async function late (index: number): Promise<any> {
     let resolveFunc: ResolveFunction = () => {}
     const promise = new Promise(resolve => {
       resolveFunc = resolve
@@ -151,14 +148,11 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
       resolve: resolveFunc,
       index
     })
-    // eslint-disable-next-line @typescript-eslint/return-await
-    return promise
+    return await promise
   }
 
-  // eslint-disable-next-line @typescript-eslint/promise-function-async
-  function promiseByIndex (index: number): Promise<any> {
-    // eslint-disable-next-line @typescript-eslint/return-await
-    return index < 5 ? immediate(index) : late(index)
+  async function promiseByIndex (index: number): Promise<any> {
+    return await (index < 5 ? immediate(index) : late(index))
   }
 
   function realResolve (delayInfo: DelayPromiseInfo): void {
@@ -174,8 +168,7 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
     await delay(100)
     t.is(0, output.length)
     immediates.forEach(realResolve)
-    // eslint-disable-next-line @typescript-eslint/promise-function-async
-    await immediates.map(item => item.promise)
+    await immediates.map(async item => await item.promise)
     await delay(100)
     t.deepEqual(output, [0, 1, 2, 3, 4])
     lates.forEach(realResolve)
