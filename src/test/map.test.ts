@@ -155,7 +155,7 @@ test('should reject when input contains rejection with concurrency', async (t) =
 })
 
 // https://github.com/petkaantonov/bluebird/blob/3a39c11ab77299a163e9504e77f498118d0c3263/test/mocha/map.js#L244
-test.skip('should not have more than {concurrency} promises in flight', async (t) => {
+test('should not have more than {concurrency} promises in flight', async (t) => {
   type ResolveFunction = (value?: any) => void
   interface DelayPromiseInfo {
     promise: Promise<any>
@@ -163,7 +163,8 @@ test.skip('should not have more than {concurrency} promises in flight', async (t
     index: number
   }
 
-  const input: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  const BATCH_SIZE = 5
+  const input: number[] = [30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
   const output: number[] = []
 
   const immediates: DelayPromiseInfo[] = []
@@ -198,35 +199,40 @@ test.skip('should not have more than {concurrency} promises in flight', async (t
     return promise
   }
 
-  // eslint-disable-next-line @typescript-eslint/promise-function-async
-  function promiseByIndex (index: number): Promise<any> {
-    // eslint-disable-next-line @typescript-eslint/return-await
-    return index < 5 ? immediate(index) : late(index)
-  }
-
   function realResolve (delayInfo: DelayPromiseInfo): void {
     delayInfo.resolve(delayInfo.index)
   }
 
   const ret1 = map(input, async (value, index) => {
-    await promiseByIndex(index)
+    await (index < BATCH_SIZE ? immediate(index) : late(index))
     output.push(value)
-  }, { concurrency: 5 })
+  }, { concurrency: BATCH_SIZE })
 
   const ret2 = (async () => {
     await delay(100)
-    t.is(0, output.length)
+    t.is(output.length, 0)
     immediates.forEach(realResolve)
     // eslint-disable-next-line @typescript-eslint/promise-function-async
     await immediates.map(item => item.promise)
     await delay(100)
-    t.deepEqual(output, [0, 1, 2, 3, 4])
+    t.is(output.length, BATCH_SIZE)
+    t.is((new Set(output)).size, BATCH_SIZE)
+    output.forEach(out => {
+      t.true(input.includes(out))
+    })
     lates.forEach(realResolve)
     await delay(100)
-    t.deepEqual(output, [0, 1, 2, 3, 4, 10, 9, 8, 7, 6])
+    t.is(output.length, BATCH_SIZE * 2)
+    t.is((new Set(output)).size, BATCH_SIZE * 2)
+    output.forEach(out => {
+      t.true(input.includes(out))
+    })
     lates.forEach(realResolve)
     await ret1
-    t.deepEqual(output, [0, 1, 2, 3, 4, 10, 9, 8, 7, 6, 5])
+    t.is(output.length, input.length)
+    output.forEach(out => {
+      t.true(input.includes(out))
+    })
   })()
   await Promise.all([ret1, ret2])
 })
