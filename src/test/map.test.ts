@@ -161,6 +161,7 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
     promise: Promise<any>
     resolve: ResolveFunction
     index: number
+    resolved: boolean
   }
 
   const BATCH_SIZE = 5
@@ -177,7 +178,8 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
     immediates.push({
       promise,
       resolve: resolveFunc,
-      index
+      index,
+      resolved: false
     })
     // eslint-disable-next-line @typescript-eslint/return-await
     return promise
@@ -186,32 +188,38 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
   const lates: Delayed[] = []
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   function late (index: number): Promise<any> {
-    let resolveFunc: ResolveFunction = () => {}
+    let resolveFunc: ResolveFunction = t.fail
     const promise = new Promise(resolve => {
       resolveFunc = resolve
     })
     lates.push({
       promise,
       resolve: resolveFunc,
-      index
+      index,
+      resolved: false
     })
     // eslint-disable-next-line @typescript-eslint/return-await
     return promise
   }
 
-  function resolveDelayed (delayInfo: Delayed): void {
-    delayInfo.resolve(delayInfo.index)
+  function resolveDelayed (delayed: Delayed): void {
+    if (!delayed.resolved) {
+      delayed.resolve(delayed.index)
+      delayed.resolved = true
+    }
   }
 
-  const ret1 = map(input, async (value, index) => {
+  const mapPromise = map(input, async (value, index) => {
     await (index < BATCH_SIZE ? immediate(index) : late(index))
     output.push(value)
   }, { concurrency: BATCH_SIZE })
 
-  const ret2 = (async () => {
+  const crossCheckPromise = (async () => {
+    // Wait for map() to execute mapper and update output array
     await delay(100)
     t.is(output.length, 0)
     immediates.forEach(resolveDelayed)
+    // Wait for map() to execute mapper and update output array
     await delay(100)
     t.is(output.length, BATCH_SIZE)
     t.is((new Set(output)).size, BATCH_SIZE)
@@ -219,6 +227,7 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
       t.true(input.includes(out))
     })
     lates.forEach(resolveDelayed)
+    // Wait for map() to execute mapper and update output array
     await delay(100)
     t.is(output.length, BATCH_SIZE * 2)
     t.is((new Set(output)).size, BATCH_SIZE * 2)
@@ -226,13 +235,13 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
       t.true(input.includes(out))
     })
     lates.forEach(resolveDelayed)
-    await ret1
+    await mapPromise
     t.is(output.length, input.length)
     output.forEach(out => {
       t.true(input.includes(out))
     })
   })()
-  await Promise.all([ret1, ret2])
+  await Promise.all([mapPromise, crossCheckPromise])
 })
 
 test('should pass correct arguments to mapper', async (t) => {
