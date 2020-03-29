@@ -13,7 +13,7 @@ npm install native-promise-util
 
 ## API
 - [promiseUtil.delay](./doc/delay.md)
-- promiseUtil.map
+- [promiseUtil.map](./doc/map.md)
 
 
 ## License
