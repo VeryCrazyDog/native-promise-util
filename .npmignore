@@ -1,0 +1,6 @@
+*.tgz
+.eslintrc.json
+ava.config.cjs
+dist/test/
+doc/
+src/test/

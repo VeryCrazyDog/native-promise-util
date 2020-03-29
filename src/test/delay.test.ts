@@ -42,7 +42,11 @@ test('delay(ms, \'hello\') should resolved to \'hello\'', async (t) => {
 })
 
 test('delay(ms, Promise) on string promise should resolved to \'hello\'', async (t) => {
-  const output = await npu.delay<{ id: number, key: string }>(1, Promise.resolve({
+  interface KeyValuePair {
+    id: number
+    key: string
+  }
+  const output = await npu.delay<KeyValuePair>(1, Promise.resolve({
     id: 123,
     key: 'value'
   }))

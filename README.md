@@ -4,5 +4,9 @@ A utility for working with native Promise. Aims to provide equivalent
 
 This utility is currently work-in-progress.
 
+## API
+- [promiseUtil.delay](./doc/delay.md)
+
+
 ## License
 This demo is licensed under the [MIT License](LICENSE).
