@@ -71,6 +71,7 @@ function buildIterativePromise<I, O> (context: MapExecutionContext<I, O>): Promi
   if (nextResult.done === true) { return null }
   const index = context.iteratedCount
   context.iteratedCount++
+  // We want to distinguish null return value from Promise
   // eslint-disable-next-line @typescript-eslint/return-await
   return resolveOutput(context, nextResult.value, index)
 }

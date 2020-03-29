@@ -17,31 +17,31 @@ function expectExecTimeAround (t: ExecutionContext, startTime: [number, number],
 }
 
 // Test cases
-test('delay(ms) should resolved to undefined', async (t) => {
+test('should resolved to undefined when no value is passed', async (t) => {
   const output = await delay(1)
   t.is(output, undefined)
 })
 
-test('delay(ms) should delay execution', async (t) => {
+test('should delay execution', async (t) => {
   const DELAY = 200
   const startTime = process.hrtime()
   await delay(DELAY)
   expectExecTimeAround(t, startTime, DELAY)
 })
 
-test('delay(ms, null) should resolved to null', async (t) => {
+test('should resolved to null when null is passed', async (t) => {
   const input = null
   const output = await delay<null>(1, input)
   t.is(output, input)
 })
 
-test('delay(ms, \'hello\') should resolved to \'hello\'', async (t) => {
+test('should resolved to \'hello\' when \'hello\' is passed', async (t) => {
   const input = 'hello'
   const output = await delay<string>(1, input)
   t.is(output, input)
 })
 
-test('delay(ms, Promise) on string promise should resolved to \'hello\'', async (t) => {
+test('should resolved to KeyValuePair when promise of KeyValuePair is passed', async (t) => {
   interface KeyValuePair {
     id: number
     key: string
@@ -56,7 +56,7 @@ test('delay(ms, Promise) on string promise should resolved to \'hello\'', async 
   })
 })
 
-test('delay(ms, Promise) shall delay after promise resolved', async (t) => {
+test('should delay return after promise resolved', async (t) => {
   const input = 'hello'
   const startTime = process.hrtime()
   const delayJob = new Promise<string>(resolve => {
