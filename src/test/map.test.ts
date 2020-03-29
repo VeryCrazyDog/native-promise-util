@@ -223,3 +223,12 @@ test.skip('should not have more than {concurrency} promises in flight', async (t
   })()
   await Promise.all([ret1, ret2])
 })
+
+test('should pass correct arguments to mapper', async (t) => {
+  const input = [30, 31, 32]
+  t.deepEqual(await map(input, (item, index, length) => {
+    t.is(item % 30, index)
+    t.is(length, input.length)
+    return item * item
+  }), [30 * 30, 31 * 31, 32 * 32])
+})
