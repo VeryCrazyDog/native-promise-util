@@ -111,8 +111,51 @@ test('should map input values array with concurrency', async (t) => {
   t.deepEqual(await map(input, mapper, concurrency), [2, 4, 6])
 })
 
+// https://github.com/petkaantonov/bluebird/blob/3a39c11ab77299a163e9504e77f498118d0c3263/test/mocha/map.js#L180
+test('should map input promises array with concurrency', async (t) => {
+  const input = [Promise.resolve(1), Promise.resolve(2), Promise.resolve(3)]
+  t.deepEqual(await map(input, mapper, concurrency), [2, 4, 6])
+})
+
+// https://github.com/petkaantonov/bluebird/blob/3a39c11ab77299a163e9504e77f498118d0c3263/test/mocha/map.js#L190
+test('should map mixed input array with concurrency', async (t) => {
+  const input = [1, Promise.resolve(2), 3]
+  t.deepEqual(await map(input, mapper, concurrency), [2, 4, 6])
+})
+
+// https://github.com/petkaantonov/bluebird/blob/3a39c11ab77299a163e9504e77f498118d0c3263/test/mocha/map.js#L200
+test('should map input when mapper returns a promise with concurrency', async (t) => {
+  const input = [1, 2, 3]
+  t.deepEqual(await map(input, deferredMapper, concurrency), [2, 4, 6])
+})
+
+// https://github.com/petkaantonov/bluebird/blob/3a39c11ab77299a163e9504e77f498118d0c3263/test/mocha/map.js#L210
+test('should accept a promise for an array with concurrency', async (t) => {
+  const input = Promise.resolve([1, Promise.resolve(2), 3])
+  t.deepEqual(await map(input, mapper, concurrency), [2, 4, 6])
+})
+
+// https://github.com/petkaantonov/bluebird/blob/3a39c11ab77299a163e9504e77f498118d0c3263/test/mocha/map.js#L224
+test('should map input promises when mapper returns a promise with concurrency', async (t) => {
+  const input = [Promise.resolve(1), Promise.resolve(2), Promise.resolve(3)]
+  t.deepEqual(await map(input, mapper, concurrency), [2, 4, 6])
+})
+
+// https://github.com/petkaantonov/bluebird/blob/3a39c11ab77299a163e9504e77f498118d0c3263/test/mocha/map.js#L234
+test('should reject when input contains rejection with concurrency', async (t) => {
+  // Make testing easier without checking the error object
+  // eslint-disable-next-line prefer-promise-reject-errors
+  const input = Promise.resolve([Promise.resolve(1), Promise.reject(2), Promise.resolve(3)])
+  try {
+    await map(input, mapper, concurrency)
+    t.fail()
+  } catch (error) {
+    t.is(error, 2)
+  }
+})
+
 // https://github.com/petkaantonov/bluebird/blob/3a39c11ab77299a163e9504e77f498118d0c3263/test/mocha/map.js#L244
-test('should not have more than {concurrency} promises in flight', async (t) => {
+test.skip('should not have more than {concurrency} promises in flight', async (t) => {
   type ResolveFunction = (value?: any) => void
   interface DelayPromiseInfo {
     promise: Promise<any>

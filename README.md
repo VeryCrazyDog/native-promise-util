@@ -4,9 +4,21 @@ A utility for working with native Promise. Aims to provide equivalent
 
 This utility is currently work-in-progress.
 
+
+## Install
+```
+npm install native-promise-util
+```
+
+
 ## API
 - [promiseUtil.delay](./doc/delay.md)
+- promiseUtil.map
 
 
 ## License
 This demo is licensed under the [MIT License](LICENSE).
+
+
+## Acknowledge
+API design and most test cases are ported from [bluebird](http://bluebirdjs.com/).

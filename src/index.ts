@@ -19,19 +19,12 @@ interface MapExecutionContext<I, O> {
 export async function delay (ms: number): Promise<undefined>;
 
 /**
- * Returns a promise that will be resolved to `value` after given `ms` milliseconds.
+ * Returns a promise that will first resolve the `value`, then wait for given `ms` milliseconds
+ * before returning the resolved value.
  * @param ms Time delay in milliseconds.
- * @param value Value to be resolved to.
+ * @param value Value to be resolved to or a promise-like object to be fulfilled.
  */
-export async function delay<T> (ms: number, value: T): Promise<T>;
-
-/**
- * Returns a promise that will be fulfilled with the fulfillment value of the `value` promise
- * after given `ms` milliseconds the `value` promise is fulfilled.
- * @param ms Time delay in milliseconds.
- * @param value Promise like object to be fulfilled.
- */
-export async function delay<T> (ms: number, value: PromiseLike<T>): Promise<T>;
+export async function delay<T> (ms: number, value: Resolvable<T>): Promise<T>;
 
 export async function delay<T> (ms: number, value?: Resolvable<T>): Promise<T | undefined> {
   const result = await value
@@ -75,6 +68,17 @@ function buildIterativePromise<I, O> (context: MapExecutionContext<I, O>): Promi
   // eslint-disable-next-line @typescript-eslint/return-await
   return resolveOutput(context, nextResult.value, index)
 }
+
+export async function map<I, O> (
+  input: Resolvable<Iterable<Resolvable<I>>>,
+  mapper: IterateFunction<I, O>
+): Promise<O[]>;
+
+export async function map<I, O> (
+  input: Resolvable<Iterable<Resolvable<I>>>,
+  mapper: IterateFunction<I, O>,
+  options: ConcurrencyOption
+): Promise<O[]>;
 
 export async function map<I, O> (
   input: Resolvable<Iterable<Resolvable<I>>>,
