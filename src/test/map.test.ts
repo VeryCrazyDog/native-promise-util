@@ -157,7 +157,7 @@ test('should reject when input contains rejection with concurrency', async (t) =
 // https://github.com/petkaantonov/bluebird/blob/3a39c11ab77299a163e9504e77f498118d0c3263/test/mocha/map.js#L244
 test('should not have more than {concurrency} promises in flight', async (t) => {
   type ResolveFunction = (value?: any) => void
-  interface DelayPromiseInfo {
+  interface Delayed {
     promise: Promise<any>
     resolve: ResolveFunction
     index: number
@@ -167,7 +167,7 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
   const input: number[] = [30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
   const output: number[] = []
 
-  const immediates: DelayPromiseInfo[] = []
+  const immediates: Delayed[] = []
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   function immediate (index: number): Promise<any> {
     let resolveFunc: ResolveFunction = () => {}
@@ -183,7 +183,7 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
     return promise
   }
 
-  const lates: DelayPromiseInfo[] = []
+  const lates: Delayed[] = []
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   function late (index: number): Promise<any> {
     let resolveFunc: ResolveFunction = () => {}
@@ -199,7 +199,7 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
     return promise
   }
 
-  function realResolve (delayInfo: DelayPromiseInfo): void {
+  function resolveDelayed (delayInfo: Delayed): void {
     delayInfo.resolve(delayInfo.index)
   }
 
@@ -211,23 +211,21 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
   const ret2 = (async () => {
     await delay(100)
     t.is(output.length, 0)
-    immediates.forEach(realResolve)
-    // eslint-disable-next-line @typescript-eslint/promise-function-async
-    await immediates.map(item => item.promise)
+    immediates.forEach(resolveDelayed)
     await delay(100)
     t.is(output.length, BATCH_SIZE)
     t.is((new Set(output)).size, BATCH_SIZE)
     output.forEach(out => {
       t.true(input.includes(out))
     })
-    lates.forEach(realResolve)
+    lates.forEach(resolveDelayed)
     await delay(100)
     t.is(output.length, BATCH_SIZE * 2)
     t.is((new Set(output)).size, BATCH_SIZE * 2)
     output.forEach(out => {
       t.true(input.includes(out))
     })
-    lates.forEach(realResolve)
+    lates.forEach(resolveDelayed)
     await ret1
     t.is(output.length, input.length)
     output.forEach(out => {
