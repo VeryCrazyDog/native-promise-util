@@ -69,11 +69,24 @@ function buildIterativePromise<I, O> (context: MapExecutionContext<I, O>): Promi
   return resolveOutput(context, nextResult.value, index)
 }
 
+/**
+ * Returns a promise that returns an array of resolved mapped values from `input` iterable
+ * using the given `mapper` function.
+ * @param input Iterable of values to pass to `mapper` function.
+ * @param mapper A function which map values returned by iterable to return value.
+ */
 export async function map<I, O> (
   input: Resolvable<Iterable<Resolvable<I>>>,
   mapper: IterateFunction<I, O>
 ): Promise<O[]>;
 
+/**
+ * Returns a promise that returns an array of resolved mapped values from `input` iterable
+ * using the given `mapper` function, with concurrency limit.
+ * @param input Iterable of values to pass to `mapper` function.
+ * @param mapper A function which map values returned by iterable to return value.
+ * @param options.concurrency Maximum number of concurrency that can be executed at the same time.
+ */
 export async function map<I, O> (
   input: Resolvable<Iterable<Resolvable<I>>>,
   mapper: IterateFunction<I, O>,
