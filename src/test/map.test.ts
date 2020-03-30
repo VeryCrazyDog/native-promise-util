@@ -269,3 +269,5 @@ test('should map input values array with concurrency more than number of input v
   const input = [1, 2, 3]
   t.deepEqual(await map(input, mapper, { concurrency: 10 }), [2, 4, 6])
 })
+
+test.todo('should give correct iterable length to mapper on custom iterable')

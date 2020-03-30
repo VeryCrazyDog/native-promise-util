@@ -6,13 +6,19 @@ import { delay } from '../index'
 
 // Private functions
 function expectExecTimeAround (t: ExecutionContext, startTime: [number, number], execTime: number): void {
-  const ALLOW_RANGE = 50
+  const ALLOW_RANGE_LOWER = 10
+  const ALLOW_RANGE_UPPER = 25
   const [, endNs] = process.hrtime(startTime)
   const endMs = endNs / 1000000
-  t.true(endMs >= execTime, `Expect actual execution time ${endMs} greater than or equal to ${execTime}`)
+  const lowerAllowed = execTime - ALLOW_RANGE_LOWER
+  const upperAllowed = execTime + ALLOW_RANGE_UPPER
   t.true(
-    endMs <= execTime + ALLOW_RANGE,
-    `Expect actual execution time ${endMs} less than or equal to ${execTime + ALLOW_RANGE}`
+    endMs >= lowerAllowed,
+    `Expect actual execution time ${endMs} greater than or equal to ${lowerAllowed}`
+  )
+  t.true(
+    endMs <= upperAllowed,
+    `Expect actual execution time ${endMs} less than or equal to ${upperAllowed}`
   )
 }
 
