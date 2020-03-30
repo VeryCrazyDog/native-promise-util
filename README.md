@@ -1,5 +1,5 @@
 # native-promise-util
-A utility for working with native Promise. Aims to provide equivalent
+A utility for working with native JavaScript Promise. Aims to provide compatible
 [bluebird API](http://bluebirdjs.com/docs/api-reference.html) but on native Promise.
 
 This utility is currently work-in-progress.
@@ -24,4 +24,6 @@ This demo is licensed under the [MIT License](LICENSE).
 
 
 ## Acknowledge
-API design and most test cases are ported from [bluebird](http://bluebirdjs.com/).
+- Most API design and a lot of test cases are ported from [bluebird](http://bluebirdjs.com/).
+- `map` and `filter` API implementation are greatly inspired by [a Gist](https://gist.github.com/yongjun21/ec0ea757b9dcbf972a351453755cadcb)
+	from [yongjun21](https://github.com/yongjun21).

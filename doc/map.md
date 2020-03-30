@@ -1,10 +1,12 @@
 # promiseUtil.map
 
 ```ts
-promiseUtil.map(
-	input: Resolvable<Iterable<Resolvable<any>>>,
-	mapper: (item: any, index: number, length: number) => Resolvable<any>,
-	options?: ConcurrencyOption
+async function map(
+  input: Resolvable<Iterable<Resolvable<any>>>,
+  mapper: (item: any, index: number, length: number) => Resolvable<any>,
+  options?: {
+    concurrency?: number
+  }
 ): Promise<any[]>
 ```
 
@@ -24,7 +26,7 @@ the promise for that item's index in the input array is fulfilled. It means that
 can be used for concurrency coordination unlike `Promise.all`.
 
 
-## Map Option: concurrency
+## Map option: concurrency
 
 You may optionally specify a concurrency limit:
 
@@ -38,3 +40,22 @@ callback has been called enough so that there are three returned Promises curren
 no further callbacks are called until one of the pending Promises resolves. So the mapper
 function will be called three times and it will be called again only after at least one
 of the Promises resolves.
+
+
+## Example
+
+```js
+const promiseUtil = require('native-promise-util')
+
+;(async () => {
+  const input = [500, 0, 200, 200, 200]
+  const finishedList = []
+  await promiseUtil.map(input, async item => {
+    await promiseUtil.delay(item)
+    finishedList.push(item)
+    return item
+  }, { concurrency: 2 })
+  // Print [ 0, 200, 200, 500, 200 ]
+  console.log(finishedList)
+})()
+```

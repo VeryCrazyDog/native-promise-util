@@ -1,9 +1,9 @@
 # promiseUtil.delay
 
-```js
-promiseUtil.delay(
-	ms: number,
-	value?: Resolvable<any>
+```ts
+async function delay(
+  ms: number,
+  value?: Resolvable<any>
 ): Promise<any | undefined>
 ```
 
@@ -12,9 +12,16 @@ If `value` is a promise, the delay will start counting down when it is fulfilled
 promise will be fulfilled with the fulfillment value of the `value` promise. If `value` is a
 rejected promise, the resulting promise will be rejected immediately. 
 
+
+## Example
+
 ```js
-await promiseUtil.delay(500)
-console.log("500 ms passed")
-await promiseUtil.delay(500)
-console.log("another 500 ms passed")
+const promiseUtil = require('native-promise-util')
+
+;(async () => {
+  await promiseUtil.delay(500)
+  console.log('500 ms passed')
+  await promiseUtil.delay(500)
+  console.log('another 500 ms passed')
+})()
 ```
