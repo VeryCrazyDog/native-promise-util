@@ -254,15 +254,15 @@ test('should pass correct arguments to mapper', async (t) => {
 })
 
 test('should execute in execution time order under limited concurrency', async (t) => {
-  const input = [100, 0, 101, 101]
+  const input = [500, 0, 200, 200, 200]
   const finishedList: number[] = []
-  const output: number[] = await map(input, async (item, index) => {
+  const output: number[] = await map(input, async item => {
     await delay(item)
     finishedList.push(item)
     return item
   }, concurrency)
   t.deepEqual(output, input)
-  t.deepEqual(finishedList, [0, 100, 101, 101])
+  t.deepEqual(finishedList, [0, 200, 200, 500, 200])
 })
 
 test('should map input values array with concurrency more than number of input values', async (t) => {
