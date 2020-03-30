@@ -1,7 +1,7 @@
-type Resolvable<R> = R | PromiseLike<R>;
-type IterateFunction<T, R> = (item: T, index: number, length: number) => Resolvable<R>;
+export type Resolvable<R> = R | PromiseLike<R>;
+export type IterateFunction<T, R> = (item: T, index: number, length: number) => Resolvable<R>;
 
-interface MapExecutionOptions {
+export interface MapExecutionOptions {
   concurrency?: number
 }
 interface MapExecutionContext<I, O> {
