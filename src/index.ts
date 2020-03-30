@@ -1,7 +1,7 @@
 type Resolvable<R> = R | PromiseLike<R>;
 type IterateFunction<T, R> = (item: T, index: number, length: number) => Resolvable<R>;
 
-interface ConcurrencyOption {
+interface MapExecutionOptions {
   concurrency?: number
 }
 interface MapExecutionContext<I, O> {
@@ -90,13 +90,13 @@ export async function map<I, O> (
 export async function map<I, O> (
   input: Resolvable<Iterable<Resolvable<I>>>,
   mapper: IterateFunction<I, O>,
-  options: ConcurrencyOption
+  options: MapExecutionOptions
 ): Promise<O[]>;
 
 export async function map<I, O> (
   input: Resolvable<Iterable<Resolvable<I>>>,
   mapper: IterateFunction<I, O>,
-  options?: ConcurrencyOption
+  options?: MapExecutionOptions
 ): Promise<O[]> {
   options = options ?? {}
   let concurrency = options.concurrency ?? Infinity

@@ -166,7 +166,7 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
 
   const BATCH_SIZE = 5
   const input: number[] = [30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
-  const output: number[] = []
+  const finishedList: number[] = []
 
   const immediates: Delayed[] = []
   // eslint-disable-next-line @typescript-eslint/promise-function-async
@@ -211,33 +211,33 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
 
   const mapPromise = map(input, async (value, index) => {
     await (index < BATCH_SIZE ? immediate(index) : late(index))
-    output.push(value)
+    finishedList.push(value)
   }, { concurrency: BATCH_SIZE })
 
   const crossCheckPromise = (async () => {
     // Wait for map() to execute mapper and update output array
     await delay(100)
-    t.is(output.length, 0)
+    t.is(finishedList.length, 0)
     immediates.forEach(resolveDelayed)
     // Wait for map() to execute mapper and update output array
     await delay(100)
-    t.is(output.length, BATCH_SIZE)
-    t.is((new Set(output)).size, BATCH_SIZE)
-    output.forEach(out => {
+    t.is(finishedList.length, BATCH_SIZE)
+    t.is((new Set(finishedList)).size, BATCH_SIZE)
+    finishedList.forEach(out => {
       t.true(input.includes(out))
     })
     lates.forEach(resolveDelayed)
     // Wait for map() to execute mapper and update output array
     await delay(100)
-    t.is(output.length, BATCH_SIZE * 2)
-    t.is((new Set(output)).size, BATCH_SIZE * 2)
-    output.forEach(out => {
+    t.is(finishedList.length, BATCH_SIZE * 2)
+    t.is((new Set(finishedList)).size, BATCH_SIZE * 2)
+    finishedList.forEach(out => {
       t.true(input.includes(out))
     })
     lates.forEach(resolveDelayed)
     await mapPromise
-    t.is(output.length, input.length)
-    output.forEach(out => {
+    t.is(finishedList.length, input.length)
+    finishedList.forEach(out => {
       t.true(input.includes(out))
     })
   })()
@@ -251,4 +251,21 @@ test('should pass correct arguments to mapper', async (t) => {
     t.is(length, input.length)
     return item * item
   }), [30 * 30, 31 * 31, 32 * 32])
+})
+
+test('should execute in execution time order under limited concurrency', async (t) => {
+  const input = [100, 0, 101, 101]
+  const finishedList: number[] = []
+  const output: number[] = await map(input, async (item, index) => {
+    await delay(item)
+    finishedList.push(item)
+    return item
+  }, concurrency)
+  t.deepEqual(output, input)
+  t.deepEqual(finishedList, [0, 100, 101, 101])
+})
+
+test('should map input values array with concurrency more than number of input values', async (t) => {
+  const input = [1, 2, 3]
+  t.deepEqual(await map(input, mapper, { concurrency: 10 }), [2, 4, 6])
 })
