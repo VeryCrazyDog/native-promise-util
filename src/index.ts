@@ -1,5 +1,5 @@
 export type Resolvable<R> = R | PromiseLike<R>;
-export type IterateFunction<T, R> = (item: T, index: number, length: number) => Resolvable<R>;
+export type IterateFunction<I, O> = (item: I, index: number, length: number) => Resolvable<O>;
 
 export interface MapExecutionOptions {
   concurrency?: number
@@ -25,11 +25,10 @@ export async function delay<T> (ms: number, value?: Resolvable<T>): Promise<T | 
   return result
 }
 
-interface MapExecutionContext<I, O> {
+interface IteratorExecutionContext<I, O> {
   iterator: Iterator<Resolvable<I>>
   inputLength: number
   iteratedCount: number
-  mapper: IterateFunction<I, O>
   output: O[]
 }
 
@@ -50,24 +49,18 @@ function getLength (iterable: Iterable<Resolvable<any>>): number {
   return result
 }
 
-async function resolveMapOutput<I, O> (
-  context: MapExecutionContext<I, O>,
-  input: Resolvable<I>,
-  index: number
-): Promise<null> {
-  const mapped = context.mapper(await input, index, context.inputLength)
-  context.output[index] = await mapped
-  return await buildIterativeMapPromise(context)
-}
-
-function buildIterativeMapPromise<I, O> (context: MapExecutionContext<I, O>): Promise<null> | null {
-  const nextResult = context.iterator.next()
-  if (nextResult.done === true) { return null }
-  const index = context.iteratedCount
-  context.iteratedCount++
-  // We want to distinguish null return value from Promise
-  // eslint-disable-next-line @typescript-eslint/return-await
-  return resolveMapOutput(context, nextResult.value, index)
+async function buildMapExecWorker<I, O> (
+  context: IteratorExecutionContext<I, O>,
+  mapper: IterateFunction<I, O>
+): Promise<void> {
+  let nextResult = context.iterator.next()
+  while (nextResult.done !== true) {
+    const index = context.iteratedCount
+    context.iteratedCount++
+    const mapped = mapper(await nextResult.value, index, context.inputLength)
+    context.output[index] = await mapped
+    nextResult = context.iterator.next()
+  }
 }
 
 /**
@@ -106,28 +99,23 @@ export async function map<I, O> (
   options?: MapExecutionOptions
 ): Promise<O[]> {
   options = options ?? {}
-  let concurrency = options.concurrency ?? Infinity
+  let availableConcurrency = options.concurrency ?? Infinity
 
   const resolvedInput = await input
-  const inputLength = getLength(resolvedInput)
-  const context: MapExecutionContext<I, O> = {
+  const context: IteratorExecutionContext<I, O> = {
     iterator: resolvedInput[Symbol.iterator](),
-    inputLength,
+    inputLength: getLength(resolvedInput),
     iteratedCount: 0,
-    mapper,
     output: []
   }
-  const concurrentPromises: Array<Promise<null>> = []
+  let availableInput = context.inputLength
 
-  while (concurrency > 0) {
-    const p = buildIterativeMapPromise(context)
-    if (p !== null) {
-      concurrentPromises.push(p)
-    } else {
-      break
-    }
-    concurrency--
+  const workers: Array<Promise<void>> = []
+  while (availableInput > 0 && availableConcurrency > 0) {
+    workers.push(buildMapExecWorker(context, mapper))
+    availableInput--
+    availableConcurrency--
   }
-  await Promise.all(concurrentPromises)
+  await Promise.all(workers)
   return context.output
 }
