@@ -17,6 +17,7 @@ npm install native-promise-util
 ## API
 - [promiseUtil.delay](./doc/delay.md)
 - [promiseUtil.map](./doc/map.md)
+- [promiseUtil.filter](./doc/filter.md)
 
 
 ## License
@@ -25,5 +26,5 @@ This demo is licensed under the [MIT License](LICENSE).
 
 ## Acknowledge
 - Most API design and a lot of test cases are ported from [bluebird](http://bluebirdjs.com/).
-- `map` and `filter` API implementation are greatly inspired by [a Gist](https://gist.github.com/yongjun21/ec0ea757b9dcbf972a351453755cadcb)
+- `map` and `filter` API implementation are inspired by [a Gist](https://gist.github.com/yongjun21/ec0ea757b9dcbf972a351453755cadcb)
 	from [yongjun21](https://github.com/yongjun21).

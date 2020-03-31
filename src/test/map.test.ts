@@ -174,6 +174,7 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
   const finishedList: number[] = []
 
   const immediates: Delayed[] = []
+  // Keep test case align with original
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   function immediate (index: number): Promise<any> {
     let resolveFunc: ResolveFunction = () => {}
@@ -186,11 +187,13 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
       index,
       resolved: false
     })
+    // Keep test case align with original
     // eslint-disable-next-line @typescript-eslint/return-await
     return promise
   }
 
   const lates: Delayed[] = []
+  // Keep test case align with original
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   function late (index: number): Promise<any> {
     let resolveFunc: ResolveFunction = t.fail
@@ -203,6 +206,7 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
       index,
       resolved: false
     })
+    // Keep test case align with original
     // eslint-disable-next-line @typescript-eslint/return-await
     return promise
   }

@@ -38,6 +38,7 @@
 	"keywords": [
 		"promise",
 		"bluebird",
-		"map"
+		"map",
+		"filter"
 	]
 }
