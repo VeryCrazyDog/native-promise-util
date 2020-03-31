@@ -133,12 +133,45 @@ async function buildFilterExecWorker<T> (
     context.iteratedCount++
     const resolvedNextResult = await nextResult.value
     const shouldInclude = await filterer(resolvedNextResult, index, context.inputLength)
+    // Do not change to `shouldInclude === true` which will not accept truthy value
+    // Although only boolean is accepted in TypeScript, user of this module may be coded in JavaScript
     if (shouldInclude) {
       context.output.push(resolvedNextResult)
     }
     nextResult = context.iterator.next()
   }
 }
+
+/**
+ * Returns a promise that returns an array of filtered resolved values from `input` iterable.
+ * Values from `input` iterable is resolved before filtered by the given `filterer` function.
+ *
+ * *The `input` iterable is not modified.*
+ *
+ * @param input Iterable of values to pass to `filterer` function.
+ * @param filterer A function which return true for filter in values returned by iterable.
+ */
+export async function filter<T> (
+  input: Resolvable<Iterable<Resolvable<T>>>,
+  filterer: IterateFunction<T, boolean>
+): Promise<T[]>;
+
+/**
+ * Returns a promise that returns an array of filtered resolved values from `input` iterable
+ * with given concurrency. Values from `input` iterable is resolved before filtered by
+ * the given `filterer` function.
+ *
+ * *The `input` iterable is not modified.*
+ *
+ * @param input Iterable of values to pass to `mapper` function.
+ * @param filterer A function which return true for filter in values returned by iterable.
+ * @param options.concurrency Maximum number of concurrency that can be executed at the same time.
+ */
+export async function filter<T> (
+  input: Resolvable<Iterable<Resolvable<T>>>,
+  filterer: IterateFunction<T, boolean>,
+  options: FilterExecutionOptions
+): Promise<T[]>;
 
 export async function filter<T> (
   input: Resolvable<Iterable<Resolvable<T>>>,
