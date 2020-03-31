@@ -8,6 +8,13 @@ export interface FilterExecutionOptions {
   concurrency?: number
 }
 
+interface IteratorExecutionContext<I, O> {
+  iterator: Iterator<Resolvable<I>>
+  inputLength: number
+  iteratedCount: number
+  output: O[]
+}
+
 /**
  * Returns a promise that will be resolved to `undefined` after given `ms` milliseconds.
  * @param ms Time delay in milliseconds.
@@ -26,13 +33,6 @@ export async function delay<T> (ms: number, value?: Resolvable<T>): Promise<T | 
   const result = await value
   await new Promise(resolve => setTimeout(resolve, ms))
   return result
-}
-
-interface IteratorExecutionContext<I, O> {
-  iterator: Iterator<Resolvable<I>>
-  inputLength: number
-  iteratedCount: number
-  output: O[]
 }
 
 function getLength (iterable: Iterable<Resolvable<any>>): number {
@@ -123,66 +123,46 @@ export async function map<I, O> (
   return context.output
 }
 
-interface FilterExecutionContext<T> {
-  iterator: Iterator<Resolvable<T>>
-  inputLength: number
-  iteratedCount: number
+async function buildFilterExecWorker<T> (
+  context: IteratorExecutionContext<T, T>,
   filterer: IterateFunction<T, boolean>
-  output: T[]
-}
-
-async function resolveFilterOutput<T> (
-  context: FilterExecutionContext<T>,
-  input: Resolvable<T>,
-  index: number
-): Promise<null> {
-  const resolvedInput = await input
-  const shouldInclude = context.filterer(resolvedInput, index, context.inputLength)
-  if (await shouldInclude) {
-    context.output.push(resolvedInput)
+): Promise<void> {
+  let nextResult = context.iterator.next()
+  while (nextResult.done !== true) {
+    const index = context.iteratedCount
+    context.iteratedCount++
+    const resolvedNextResult = await nextResult.value
+    const shouldInclude = await filterer(resolvedNextResult, index, context.inputLength)
+    if (shouldInclude) {
+      context.output.push(resolvedNextResult)
+    }
+    nextResult = context.iterator.next()
   }
-  return await buildIterativeFilterPromise(context)
 }
 
-function buildIterativeFilterPromise<T> (context: FilterExecutionContext<T>): Promise<null> | null {
-  const nextResult = context.iterator.next()
-  if (nextResult.done === true) { return null }
-  const index = context.iteratedCount
-  context.iteratedCount++
-  // We want to distinguish null return value from Promise
-  // eslint-disable-next-line @typescript-eslint/return-await
-  return resolveFilterOutput(context, nextResult.value, index)
-}
-
-// TODO Implement, stub only
 export async function filter<T> (
   input: Resolvable<Iterable<Resolvable<T>>>,
   filterer: IterateFunction<T, boolean>,
   options?: FilterExecutionOptions
 ): Promise<T[]> {
   options = options ?? {}
-  let concurrency = options.concurrency ?? Infinity
+  let availableConcurrency = options.concurrency ?? Infinity
 
   const resolvedInput = await input
-  const inputLength = getLength(resolvedInput)
-  const context: FilterExecutionContext<T> = {
+  const context: IteratorExecutionContext<T, T> = {
     iterator: resolvedInput[Symbol.iterator](),
-    inputLength,
+    inputLength: getLength(resolvedInput),
     iteratedCount: 0,
-    filterer,
     output: []
   }
-  const concurrentPromises: Array<Promise<null>> = []
+  let availableInput = context.inputLength
 
-  while (concurrency > 0) {
-    const p = buildIterativeFilterPromise(context)
-    if (p !== null) {
-      concurrentPromises.push(p)
-    } else {
-      break
-    }
-    concurrency--
+  const workers: Array<Promise<void>> = []
+  while (availableInput > 0 && availableConcurrency > 0) {
+    workers.push(buildFilterExecWorker(context, filterer))
+    availableInput--
+    availableConcurrency--
   }
-  await Promise.all(concurrentPromises)
+  await Promise.all(workers)
   return context.output
 }
