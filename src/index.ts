@@ -4,6 +4,9 @@ export type IterateFunction<T, R> = (item: T, index: number, length: number) => 
 export interface MapExecutionOptions {
   concurrency?: number
 }
+export interface FilterExecutionOptions {
+  concurrency?: number
+}
 
 /**
  * Returns a promise that will be resolved to `undefined` after given `ms` milliseconds.
@@ -73,9 +76,9 @@ function buildIterativeMapPromise<I, O> (context: MapExecutionContext<I, O>): Pr
 /**
  * Returns a promise that returns an array of resolved mapped values from `input` iterable
  * using the given `mapper` function.
- *
+ * 
  * *The `input` iterable is not modified.*
- *
+ * 
  * @param input Iterable of values to pass to `mapper` function.
  * @param mapper A function which map values returned by iterable to return value.
  */
@@ -87,9 +90,9 @@ export async function map<I, O> (
 /**
  * Returns a promise that returns an array of resolved mapped values from `input` iterable
  * using the given `mapper` function, with concurrency limit.
- *
+ * 
  * *The `input` iterable is not modified.*
- *
+ * 
  * @param input Iterable of values to pass to `mapper` function.
  * @param mapper A function which map values returned by iterable to return value.
  * @param options.concurrency Maximum number of concurrency that can be executed at the same time.
@@ -121,6 +124,47 @@ export async function map<I, O> (
 
   while (concurrency > 0) {
     const p = buildIterativeMapPromise(context)
+    if (p !== null) {
+      concurrentPromises.push(p)
+    } else {
+      break
+    }
+    concurrency--
+  }
+  await Promise.all(concurrentPromises)
+  return context.output
+}
+
+interface FilterExecutionContext<T> {
+  iterator: Iterator<Resolvable<T>>
+  inputLength: number
+  iteratedCount: number
+  filterer: IterateFunction<T, boolean>
+  output: T[]
+}
+
+// TODO Implement, stub only
+export async function filter<T> (
+  input: Resolvable<Iterable<Resolvable<T>>>,
+  filterer: IterateFunction<T, boolean>,
+  options?: FilterExecutionOptions
+): Promise<T[]> {
+  options = options ?? {}
+  let concurrency = options.concurrency ?? Infinity
+
+  const resolvedInput = await input
+  const inputLength = getLength(resolvedInput)
+  const context: FilterExecutionContext<T> = {
+    iterator: resolvedInput[Symbol.iterator](),
+    inputLength,
+    iteratedCount: 0,
+    filterer,
+    output: []
+  }
+  const concurrentPromises: Promise<null>[] = []
+
+  while (concurrency > 0) {
+    const p = buildIterativeFilterPromise(context)
     if (p !== null) {
       concurrentPromises.push(p)
     } else {
