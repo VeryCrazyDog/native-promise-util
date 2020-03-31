@@ -76,9 +76,9 @@ function buildIterativeMapPromise<I, O> (context: MapExecutionContext<I, O>): Pr
 /**
  * Returns a promise that returns an array of resolved mapped values from `input` iterable
  * using the given `mapper` function.
- * 
+ *
  * *The `input` iterable is not modified.*
- * 
+ *
  * @param input Iterable of values to pass to `mapper` function.
  * @param mapper A function which map values returned by iterable to return value.
  */
@@ -90,9 +90,9 @@ export async function map<I, O> (
 /**
  * Returns a promise that returns an array of resolved mapped values from `input` iterable
  * using the given `mapper` function, with concurrency limit.
- * 
+ *
  * *The `input` iterable is not modified.*
- * 
+ *
  * @param input Iterable of values to pass to `mapper` function.
  * @param mapper A function which map values returned by iterable to return value.
  * @param options.concurrency Maximum number of concurrency that can be executed at the same time.
@@ -143,6 +143,29 @@ interface FilterExecutionContext<T> {
   output: T[]
 }
 
+async function resolveFilterOutput<T> (
+  context: FilterExecutionContext<T>,
+  input: Resolvable<T>,
+  index: number
+): Promise<null> {
+  const resolvedInput = await input
+  const shouldInclude = context.filterer(resolvedInput, index, context.inputLength)
+  if (await shouldInclude) {
+    context.output.push(resolvedInput)
+  }
+  return await buildIterativeFilterPromise(context)
+}
+
+function buildIterativeFilterPromise<T> (context: FilterExecutionContext<T>): Promise<null> | null {
+  const nextResult = context.iterator.next()
+  if (nextResult.done === true) { return null }
+  const index = context.iteratedCount
+  context.iteratedCount++
+  // We want to distinguish null return value from Promise
+  // eslint-disable-next-line @typescript-eslint/return-await
+  return resolveFilterOutput(context, nextResult.value, index)
+}
+
 // TODO Implement, stub only
 export async function filter<T> (
   input: Resolvable<Iterable<Resolvable<T>>>,
@@ -161,7 +184,7 @@ export async function filter<T> (
     filterer,
     output: []
   }
-  const concurrentPromises: Promise<null>[] = []
+  const concurrentPromises: Array<Promise<null>> = []
 
   while (concurrency > 0) {
     const p = buildIterativeFilterPromise(context)
