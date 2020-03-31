@@ -5,7 +5,7 @@ import test, { ExecutionContext } from 'ava'
 import { delay } from '../index'
 
 // Private functions
-function expectExecTimeAround (t: ExecutionContext, startTime: [number, number], execTime: number): void {
+function assertExecTimeAround (t: ExecutionContext, startTime: [number, number], execTime: number): void {
   const ALLOW_RANGE_LOWER = 10
   const ALLOW_RANGE_UPPER = 25
   const [, endNs] = process.hrtime(startTime)
@@ -32,7 +32,7 @@ test('should delay execution', async (t) => {
   const DELAY = 200
   const startTime = process.hrtime()
   await delay(DELAY)
-  expectExecTimeAround(t, startTime, DELAY)
+  assertExecTimeAround(t, startTime, DELAY)
 })
 
 test('should resolved to null when null is passed', async (t) => {
@@ -67,11 +67,11 @@ test('should delay return after promise resolved', async (t) => {
   const startTime = process.hrtime()
   const delayJob = new Promise<string>(resolve => {
     setTimeout(() => {
-      expectExecTimeAround(t, startTime, 100)
+      assertExecTimeAround(t, startTime, 100)
       resolve(input)
     }, 100)
   })
   const output = await delay<string>(200, delayJob)
-  expectExecTimeAround(t, startTime, 300)
+  assertExecTimeAround(t, startTime, 300)
   t.is(output, input)
 })
