@@ -15,6 +15,23 @@ interface IteratorExecutionContext<I, O> {
   output: O[]
 }
 
+function getLength (iterable: Iterable<Resolvable<any>>): number {
+  let result
+  if (iterable instanceof Array) {
+    result = (iterable).length
+  } else {
+    const iterator = iterable[Symbol.iterator]()
+    let count = 0
+    let next = iterator.next()
+    while (next.done !== true) {
+      count++
+      next = iterator.next()
+    }
+    result = count
+  }
+  return result
+}
+
 /**
  * Returns a promise that will be resolved to `undefined` after given `ms` milliseconds.
  * @param ms Time delay in milliseconds.
@@ -32,23 +49,6 @@ export async function delay<T> (ms: number, value: Resolvable<T>): Promise<T>;
 export async function delay<T> (ms: number, value?: Resolvable<T>): Promise<T | undefined> {
   const result = await value
   await new Promise(resolve => setTimeout(resolve, ms))
-  return result
-}
-
-function getLength (iterable: Iterable<Resolvable<any>>): number {
-  let result
-  if (iterable instanceof Array) {
-    result = (iterable).length
-  } else {
-    const iterator = iterable[Symbol.iterator]()
-    let count = 0
-    let next = iterator.next()
-    while (next.done !== true) {
-      count++
-      next = iterator.next()
-    }
-    result = count
-  }
   return result
 }
 
