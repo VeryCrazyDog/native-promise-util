@@ -123,6 +123,11 @@ test('should map mixed input array with concurrency', async (t) => {
   t.deepEqual(await map(input, mapper, concurrency), [2, 4, 6])
 })
 
+test('should map input array containing null value with concurrency', async (t) => {
+  const input = [1, 2, 3, 4, null, 5]
+  t.deepEqual(await map(input, val => val === null ? null : val * 2, concurrency), [2, 4, 6, 8, null, 10])
+})
+
 // https://github.com/petkaantonov/bluebird/blob/3a39c11ab77299a163e9504e77f498118d0c3263/test/mocha/map.js#L200
 test('should map input when mapper returns a promise with concurrency', async (t) => {
   const input = [1, 2, 3]

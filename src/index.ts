@@ -4,13 +4,6 @@ export type IterateFunction<T, R> = (item: T, index: number, length: number) => 
 export interface MapExecutionOptions {
   concurrency?: number
 }
-interface MapExecutionContext<I, O> {
-  iterator: Iterator<Resolvable<I>>
-  inputLength: number
-  iteratedCount: number
-  mapper: IterateFunction<I, O>
-  output: O[]
-}
 
 /**
  * Returns a promise that will be resolved to `undefined` after given `ms` milliseconds.
@@ -32,6 +25,14 @@ export async function delay<T> (ms: number, value?: Resolvable<T>): Promise<T | 
   return result
 }
 
+interface MapExecutionContext<I, O> {
+  iterator: Iterator<Resolvable<I>>
+  inputLength: number
+  iteratedCount: number
+  mapper: IterateFunction<I, O>
+  output: O[]
+}
+
 function getLength (iterable: Iterable<Resolvable<any>>): number {
   let result
   if (iterable instanceof Array) {
@@ -49,29 +50,32 @@ function getLength (iterable: Iterable<Resolvable<any>>): number {
   return result
 }
 
-async function resolveOutput<I, O> (
+async function resolveMapOutput<I, O> (
   context: MapExecutionContext<I, O>,
   input: Resolvable<I>,
   index: number
 ): Promise<null> {
   const mapped = context.mapper(await input, index, context.inputLength)
   context.output[index] = await mapped
-  return await buildIterativePromise(context)
+  return await buildIterativeMapPromise(context)
 }
 
-function buildIterativePromise<I, O> (context: MapExecutionContext<I, O>): Promise<null> | null {
+function buildIterativeMapPromise<I, O> (context: MapExecutionContext<I, O>): Promise<null> | null {
   const nextResult = context.iterator.next()
   if (nextResult.done === true) { return null }
   const index = context.iteratedCount
   context.iteratedCount++
   // We want to distinguish null return value from Promise
   // eslint-disable-next-line @typescript-eslint/return-await
-  return resolveOutput(context, nextResult.value, index)
+  return resolveMapOutput(context, nextResult.value, index)
 }
 
 /**
  * Returns a promise that returns an array of resolved mapped values from `input` iterable
  * using the given `mapper` function.
+ *
+ * *The `input` iterable is not modified.*
+ *
  * @param input Iterable of values to pass to `mapper` function.
  * @param mapper A function which map values returned by iterable to return value.
  */
@@ -83,6 +87,9 @@ export async function map<I, O> (
 /**
  * Returns a promise that returns an array of resolved mapped values from `input` iterable
  * using the given `mapper` function, with concurrency limit.
+ *
+ * *The `input` iterable is not modified.*
+ *
  * @param input Iterable of values to pass to `mapper` function.
  * @param mapper A function which map values returned by iterable to return value.
  * @param options.concurrency Maximum number of concurrency that can be executed at the same time.
@@ -113,7 +120,7 @@ export async function map<I, O> (
   const concurrentPromises: Array<Promise<null>> = []
 
   while (concurrency > 0) {
-    const p = buildIterativePromise(context)
+    const p = buildIterativeMapPromise(context)
     if (p !== null) {
       concurrentPromises.push(p)
     } else {

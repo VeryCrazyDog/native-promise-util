@@ -5,7 +5,7 @@ async function map(
   input: Resolvable<Iterable<Resolvable<any>>>,
   mapper: (item: any, index: number, length: number) => Resolvable<any>,
   options?: {
-    concurrency?: number
+    concurrency?: number = Infinity
   }
 ): Promise<any[]>
 ```
@@ -24,6 +24,9 @@ the returned promise is rejected as well.
 The mapper function for a given item is called as soon as possible, that is, when
 the promise for that item's index in the input array is fulfilled. It means that `.map`
 can be used for concurrency coordination unlike `Promise.all`.
+
+The `input` iterable is not modified, the array resolved from returned promise preserves
+the original `input` order.
 
 
 ## Map option: concurrency
