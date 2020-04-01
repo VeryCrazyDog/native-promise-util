@@ -4,6 +4,9 @@ export type IterateFunction<I, O> = (item: I, index: number, length: number) => 
 export interface MapExecutionOptions {
   concurrency?: number
 }
+export interface MapSeriesExecutionOptions {
+  concurrency?: number
+}
 export interface FilterExecutionOptions {
   concurrency?: number
 }
@@ -121,6 +124,46 @@ export async function map<I, O> (
   }
   await Promise.all(workers)
   return context.output
+}
+
+async function resolveMapSeriesOutput<I, O> (
+  input: Resolvable<I>,
+  mapper: IterateFunction<I, O>,
+  index: number,
+  inputLength: number
+): Promise<O> {
+  return await mapper(await input, index, inputLength)
+}
+
+export async function mapSeries<I, O> (
+  input: Resolvable<Iterable<Resolvable<I>>>,
+  mapper: IterateFunction<I, O>,
+  options?: MapSeriesExecutionOptions
+): Promise<O[]> {
+  options = options ?? {}
+  let availableConcurrency = options.concurrency ?? 1
+
+  const resolvedInput = await input
+  const inputLength = getLength(resolvedInput)
+  const iterator = resolvedInput[Symbol.iterator]()
+  let iteratedCount = 0
+  const inflightPromises: Promise<O>[] = []
+  const output:O[] = []
+
+  let nextInput = iterator.next()
+  while(nextInput.done !== true) {
+    const index = iteratedCount
+    iteratedCount++
+
+
+    const nextOutputPromise = nextInput.value
+    inflightPromises
+
+    
+
+    nextInput = iterator.next()
+  }
+  return output
 }
 
 async function buildFilterExecWorker<T> (
