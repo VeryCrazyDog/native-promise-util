@@ -126,44 +126,42 @@ export async function map<I, O> (
   return context.output
 }
 
-async function resolveMapSeriesOutput<I, O> (
-  input: Resolvable<I>,
-  mapper: IterateFunction<I, O>,
-  index: number,
-  inputLength: number
-): Promise<O> {
-  return await mapper(await input, index, inputLength)
-}
-
 export async function mapSeries<I, O> (
   input: Resolvable<Iterable<Resolvable<I>>>,
   mapper: IterateFunction<I, O>,
   options?: MapSeriesExecutionOptions
 ): Promise<O[]> {
   options = options ?? {}
-  let availableConcurrency = options.concurrency ?? 1
+  const concurrency = options.concurrency ?? 1
+  if (concurrency < 1) {
+    throw new TypeError('TODO')
+  }
 
   const resolvedInput = await input
   const inputLength = getLength(resolvedInput)
   const iterator = resolvedInput[Symbol.iterator]()
   let iteratedCount = 0
-  const inflightPromises: Promise<O>[] = []
-  const output:O[] = []
+  const inflightPromises: Array<Resolvable<O>> = []
+  const outputs: O[] = []
 
   let nextInput = iterator.next()
-  while(nextInput.done !== true) {
+  while (nextInput.done !== true) {
     const index = iteratedCount
     iteratedCount++
-
-
-    const nextOutputPromise = nextInput.value
-    inflightPromises
-
-    
-
+    if (inflightPromises.length > 0 && inflightPromises.length >= concurrency) {
+      // shift() will never return undefined because array length is checked
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      outputs.push((await inflightPromises.shift())!)
+    }
+    inflightPromises.push(mapper(await nextInput.value, index, inputLength))
     nextInput = iterator.next()
   }
-  return output
+  while (inflightPromises.length > 0) {
+    // shift() will never return undefined because array length is checked
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    outputs.push((await inflightPromises.shift())!)
+  }
+  return outputs
 }
 
 async function buildFilterExecWorker<T> (
