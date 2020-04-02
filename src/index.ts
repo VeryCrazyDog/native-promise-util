@@ -144,9 +144,6 @@ export async function mapSeries<I, O> (
   const inputLength = getLength(resolvedInput)
   const iterator = resolvedInput[Symbol.iterator]()
   let iteratedCount = 0
-  // Avoid push() and shift() when `options.inflight` = 1
-  let firstInflight: Resolvable<O>
-  let firstInflightUsed: boolean = false
   const inflights: Array<Resolvable<O>> = []
   const output: O[] = []
 
@@ -154,23 +151,12 @@ export async function mapSeries<I, O> (
   while (nextInput.done !== true) {
     const index = iteratedCount
     iteratedCount++
-    if (inflights.length >= maxInflight - 1 && firstInflightUsed) {
-      output.push(await firstInflight)
-      if (inflights.length > 0) {
-        // shift() will never return undefined because array length is checked
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        firstInflight = inflights.shift()!
-      } else {
-        firstInflightUsed = false
-      }
+    if (inflights.length >= maxInflight) {
+      // shift() will never return undefined because array length is checked
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      output.push((await inflights.shift())!)
     }
-    const mapped = mapper(await nextInput.value, index, inputLength)
-    if (!firstInflightUsed) {
-      firstInflight = mapped
-      firstInflightUsed = true
-    } else {
-      inflights.push(mapped)
-    }
+    inflights.push(mapper(await nextInput.value, index, inputLength))
     nextInput = iterator.next()
   }
   while (inflights.length > 0) {
