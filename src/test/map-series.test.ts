@@ -23,8 +23,8 @@ test("should return the array's values mapped", async (t) => {
   t.deepEqual(output, [2, 4, 6])
 })
 
-test('should execute in input order', async (t) => {
-  const input = [500, 0, 201, 202, 203]
+test('should start and end mapper in input order', async (t) => {
+  const input = [500, 0, 100, 300, 101]
   const beginMapperItems: number[] = []
   const endMapperItems: number[] = []
   const output: number[] = await mapSeries(input, async (item) => {
@@ -38,7 +38,7 @@ test('should execute in input order', async (t) => {
   t.deepEqual(endMapperItems, input)
 })
 
-test('should start mapper in input order', async (t) => {
+test('should start mapper in input order and end mapper in execution time order with inflight', async (t) => {
   const input = [500, 0, 100, 300, 101]
   const beginMapperOrder: number[] = []
   const endMapperOrder: number[] = []

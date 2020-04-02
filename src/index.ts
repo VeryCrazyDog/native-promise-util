@@ -148,21 +148,31 @@ export async function mapSeries<I, O> (
   const output: O[] = []
 
   let nextInput = iterator.next()
-  while (nextInput.done !== true) {
-    const index = iteratedCount
-    iteratedCount++
-    if (inflights.length >= maxInflight) {
+  if (maxInflight < 2) {
+    // Provides a higher performance implementation without push() and shift()
+    while (nextInput.done !== true) {
+      const index = iteratedCount
+      iteratedCount++
+      output.push(await mapper(await nextInput.value, index, inputLength))
+      nextInput = iterator.next()
+    }
+  } else {
+    while (nextInput.done !== true) {
+      const index = iteratedCount
+      iteratedCount++
+      if (inflights.length >= maxInflight) {
+        // shift() will never return undefined because array length is checked
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        output.push((await inflights.shift())!)
+      }
+      inflights.push(mapper(await nextInput.value, index, inputLength))
+      nextInput = iterator.next()
+    }
+    while (inflights.length > 0) {
       // shift() will never return undefined because array length is checked
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       output.push((await inflights.shift())!)
     }
-    inflights.push(mapper(await nextInput.value, index, inputLength))
-    nextInput = iterator.next()
-  }
-  while (inflights.length > 0) {
-    // shift() will never return undefined because array length is checked
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    output.push((await inflights.shift())!)
   }
   return output
 }
