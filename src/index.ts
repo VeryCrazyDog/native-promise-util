@@ -5,7 +5,7 @@ export interface MapExecutionOptions {
   concurrency?: number
 }
 export interface MapSeriesExecutionOptions {
-  concurrency?: number
+  inflight?: number
 }
 export interface FilterExecutionOptions {
   concurrency?: number
@@ -106,6 +106,9 @@ export async function map<I, O> (
 ): Promise<O[]> {
   options = options ?? {}
   let availableConcurrency = options.concurrency ?? Infinity
+  if (availableConcurrency < 1) {
+    availableConcurrency = 1
+  }
 
   const resolvedInput = await input
   const context: IteratorExecutionContext<I, O> = {
@@ -132,36 +135,36 @@ export async function mapSeries<I, O> (
   options?: MapSeriesExecutionOptions
 ): Promise<O[]> {
   options = options ?? {}
-  const concurrency = options.concurrency ?? 1
-  if (concurrency < 1) {
-    throw new TypeError('TODO')
+  let maxInflight = options.inflight ?? 1
+  if (maxInflight < 1) {
+    maxInflight = 1
   }
 
   const resolvedInput = await input
   const inputLength = getLength(resolvedInput)
   const iterator = resolvedInput[Symbol.iterator]()
   let iteratedCount = 0
-  const inflightPromises: Array<Resolvable<O>> = []
-  const outputs: O[] = []
+  const inflights: Array<Resolvable<O>> = []
+  const output: O[] = []
 
   let nextInput = iterator.next()
   while (nextInput.done !== true) {
     const index = iteratedCount
     iteratedCount++
-    if (inflightPromises.length > 0 && inflightPromises.length >= concurrency) {
+    if (inflights.length > 0 && inflights.length >= maxInflight) {
       // shift() will never return undefined because array length is checked
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      outputs.push((await inflightPromises.shift())!)
+      output.push((await inflights.shift())!)
     }
-    inflightPromises.push(mapper(await nextInput.value, index, inputLength))
+    inflights.push(mapper(await nextInput.value, index, inputLength))
     nextInput = iterator.next()
   }
-  while (inflightPromises.length > 0) {
+  while (inflights.length > 0) {
     // shift() will never return undefined because array length is checked
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    outputs.push((await inflightPromises.shift())!)
+    output.push((await inflights.shift())!)
   }
-  return outputs
+  return output
 }
 
 async function buildFilterExecWorker<T> (
@@ -221,6 +224,9 @@ export async function filter<T> (
 ): Promise<T[]> {
   options = options ?? {}
   let availableConcurrency = options.concurrency ?? Infinity
+  if (availableConcurrency < 1) {
+    availableConcurrency = 1
+  }
 
   const resolvedInput = await input
   const context: IteratorExecutionContext<T, T> = {
