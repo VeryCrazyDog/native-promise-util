@@ -120,7 +120,7 @@ export async function map<I, O> (
   let availableInput = context.inputLength
 
   const workers: Array<Promise<void>> = []
-  while (availableInput > 0 && availableConcurrency > 0) {
+  while (availableConcurrency > 0 && availableInput > 0) {
     workers.push(buildMapExecWorker(context, mapper))
     availableInput--
     availableConcurrency--
@@ -144,6 +144,9 @@ export async function mapSeries<I, O> (
   const inputLength = getLength(resolvedInput)
   const iterator = resolvedInput[Symbol.iterator]()
   let iteratedCount = 0
+  // Avoid push() and shift() when `options.inflight` = 1
+  let firstInflight: Resolvable<O>
+  let firstInflightUsed: boolean = false
   const inflights: Array<Resolvable<O>> = []
   const output: O[] = []
 
@@ -151,12 +154,23 @@ export async function mapSeries<I, O> (
   while (nextInput.done !== true) {
     const index = iteratedCount
     iteratedCount++
-    if (inflights.length > 0 && inflights.length >= maxInflight) {
-      // shift() will never return undefined because array length is checked
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      output.push((await inflights.shift())!)
+    if (inflights.length >= maxInflight - 1 && firstInflightUsed) {
+      output.push(await firstInflight)
+      if (inflights.length > 0) {
+        // shift() will never return undefined because array length is checked
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        firstInflight = inflights.shift()!
+      } else {
+        firstInflightUsed = false
+      }
     }
-    inflights.push(mapper(await nextInput.value, index, inputLength))
+    const mapped = mapper(await nextInput.value, index, inputLength)
+    if (!firstInflightUsed) {
+      firstInflight = mapped
+      firstInflightUsed = true
+    } else {
+      inflights.push(mapped)
+    }
     nextInput = iterator.next()
   }
   while (inflights.length > 0) {
@@ -238,7 +252,7 @@ export async function filter<T> (
   let availableInput = context.inputLength
 
   const workers: Array<Promise<void>> = []
-  while (availableInput > 0 && availableConcurrency > 0) {
+  while (availableConcurrency > 0 && availableInput > 0) {
     workers.push(buildFilterExecWorker(context, filterer))
     availableInput--
     availableConcurrency--
