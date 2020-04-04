@@ -177,7 +177,7 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
   // Keep test case align with original
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   function immediate (index: number): Promise<any> {
-    let resolveFunc: ResolveFunction = () => {}
+    let resolveFunc: ResolveFunction = () => { }
     const promise = new Promise(resolve => {
       resolveFunc = resolve
     })
@@ -253,13 +253,15 @@ test('should not have more than {concurrency} promises in flight', async (t) => 
   await Promise.all([mapPromise, crossCheckPromise])
 })
 
-test('should pass correct arguments to mapper', async (t) => {
-  const input = [30, 31, 32]
-  t.deepEqual(await map(input, (item, index, length) => {
+test('should pass correct item and index to mapper', async (t) => {
+  const input = [Promise.resolve(30), Promise.resolve(31), Promise.resolve(32)]
+  const itemPassed: number[] = []
+  await map(input, (item, index) => {
+    itemPassed.push(item)
     t.is(item % 30, index)
-    t.is(length, input.length)
     return item * item
-  }), [30 * 30, 31 * 31, 32 * 32])
+  })
+  t.deepEqual(itemPassed, [30, 31, 32])
 })
 
 test('should execute in execution time order under limited concurrency', async (t) => {
@@ -279,4 +281,47 @@ test('should map input values array with concurrency more than number of input v
   t.deepEqual(await map(input, mapper, { concurrency: 10 }), [2, 4, 6])
 })
 
-test.todo('should give correct iterable length to mapper on custom iterable')
+test('should give correct iterable length to mapper on Array input', async t => {
+  const input = [30, 31, 32]
+  await map(input, (item, index, length) => {
+    t.is(length, 3)
+    return item * item
+  })
+})
+
+test('should give correct iterable length to mapper on custom iterable input', async t => {
+  class SequenceIterator implements Iterator<number> {
+    private current: number;
+    private readonly max: number;
+
+    constructor (start: number, max?: number) {
+      this.current = start
+      this.max = max ?? Infinity
+    }
+
+    public next (): IteratorResult<number> {
+      const thisValue = this.current
+      if (thisValue > this.max) {
+        return {
+          value: undefined,
+          done: true
+        }
+      } else {
+        this.current++
+        return {
+          value: thisValue,
+          done: false
+        }
+      }
+    }
+  }
+  const customIterable: Iterable<number> = {
+    [Symbol.iterator]: () => {
+      return new SequenceIterator(30, 32)
+    }
+  }
+  await map(customIterable, (item, index, length) => {
+    t.is(length, 3)
+    return item * item
+  })
+})
