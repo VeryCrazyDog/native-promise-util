@@ -27,7 +27,7 @@ This module is licensed under the [MIT License](./LICENSE).
 
 ## Acknowledge
 This module was built by referencing the following materials:
-- Most API design and a lot of test cases are ported from [bluebird]().
+- Most API design and a lot of test cases are ported from [bluebird].
 - `map` and `filter` API implementation are inspired by [a Gist][1] from [yongjun21].
 
 
