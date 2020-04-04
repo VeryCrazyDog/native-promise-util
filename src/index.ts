@@ -4,6 +4,9 @@ export type IterateFunction<I, O> = (item: I, index: number, length: number) => 
 export interface MapExecutionOptions {
   concurrency?: number
 }
+export interface MapSeriesExecutionOptions {
+  inflight?: number
+}
 export interface FilterExecutionOptions {
   concurrency?: number
 }
@@ -103,6 +106,9 @@ export async function map<I, O> (
 ): Promise<O[]> {
   options = options ?? {}
   let availableConcurrency = options.concurrency ?? Infinity
+  if (availableConcurrency < 1) {
+    availableConcurrency = 1
+  }
 
   const resolvedInput = await input
   const context: IteratorExecutionContext<I, O> = {
@@ -114,13 +120,92 @@ export async function map<I, O> (
   let availableInput = context.inputLength
 
   const workers: Array<Promise<void>> = []
-  while (availableInput > 0 && availableConcurrency > 0) {
+  while (availableConcurrency > 0 && availableInput > 0) {
     workers.push(buildMapExecWorker(context, mapper))
     availableInput--
     availableConcurrency--
   }
   await Promise.all(workers)
   return context.output
+}
+
+/**
+ * Returns a promise that returns an array of resolved mapped values from `input` iterable
+ * using the given `mapper` function executed in series.
+ *
+ * *The `input` iterable is not modified.*
+ *
+ * @param input Iterable of values to pass to `mapper` function.
+ * @param mapper A function which map values returned by iterable to return value.
+ */
+export async function mapSeries<I, O> (
+  input: Resolvable<Iterable<Resolvable<I>>>,
+  mapper: IterateFunction<I, O>
+): Promise<O[]>;
+
+/**
+ * Returns a promise that returns an array of resolved mapped values from `input` iterable
+ * using the given `mapper` function. Execution is started in series with a maximum number of
+ * inflight limit.
+ *
+ * *The `input` iterable is not modified.*
+ *
+ * @param input Iterable of values to pass to `mapper` function.
+ * @param mapper A function which map values returned by iterable to return value.
+ * @param options.inflight Maximum number of inflight limit that can be executed at the same time.
+ */
+export async function mapSeries<I, O> (
+  input: Resolvable<Iterable<Resolvable<I>>>,
+  mapper: IterateFunction<I, O>,
+  options: MapSeriesExecutionOptions
+): Promise<O[]>;
+
+export async function mapSeries<I, O> (
+  input: Resolvable<Iterable<Resolvable<I>>>,
+  mapper: IterateFunction<I, O>,
+  options?: MapSeriesExecutionOptions
+): Promise<O[]> {
+  options = options ?? {}
+  let maxInflight = options.inflight ?? 1
+  if (maxInflight < 1) {
+    maxInflight = 1
+  }
+
+  const resolvedInput = await input
+  const inputLength = getLength(resolvedInput)
+  const iterator = resolvedInput[Symbol.iterator]()
+  let iteratedCount = 0
+  const inflights: Array<Resolvable<O>> = []
+  const output: O[] = []
+
+  let nextInput = iterator.next()
+  if (maxInflight < 2) {
+    // Provides a higher performance implementation without push() and shift()
+    while (nextInput.done !== true) {
+      const index = iteratedCount
+      iteratedCount++
+      output.push(await mapper(await nextInput.value, index, inputLength))
+      nextInput = iterator.next()
+    }
+  } else {
+    while (nextInput.done !== true) {
+      const index = iteratedCount
+      iteratedCount++
+      if (inflights.length >= maxInflight) {
+        // shift() will never return undefined because array length is checked
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        output.push((await inflights.shift())!)
+      }
+      inflights.push(mapper(await nextInput.value, index, inputLength))
+      nextInput = iterator.next()
+    }
+    while (inflights.length > 0) {
+      // shift() will never return undefined because array length is checked
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      output.push((await inflights.shift())!)
+    }
+  }
+  return output
 }
 
 async function buildFilterExecWorker<T> (
@@ -180,6 +265,9 @@ export async function filter<T> (
 ): Promise<T[]> {
   options = options ?? {}
   let availableConcurrency = options.concurrency ?? Infinity
+  if (availableConcurrency < 1) {
+    availableConcurrency = 1
+  }
 
   const resolvedInput = await input
   const context: IteratorExecutionContext<T, T> = {
@@ -191,7 +279,7 @@ export async function filter<T> (
   let availableInput = context.inputLength
 
   const workers: Array<Promise<void>> = []
-  while (availableInput > 0 && availableConcurrency > 0) {
+  while (availableConcurrency > 0 && availableInput > 0) {
     workers.push(buildFilterExecWorker(context, filterer))
     availableInput--
     availableConcurrency--
