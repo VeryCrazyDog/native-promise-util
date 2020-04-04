@@ -20,7 +20,7 @@ the array is rejected, or any promise returned by the `mapper` function is rejec
 the returned promise is rejected as well.
 
 The mapper function for a given item is called as soon as possible, that is, when
-the promise for that item's index in the input array is fulfilled. It means that `.map`
+the promise for that item's index in the input array is fulfilled. It means that `.map()`
 can be used for concurrency coordination unlike `Promise.all`.
 
 The `input` iterable is not modified, the array resolved from returned promise preserves
