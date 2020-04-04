@@ -21,7 +21,7 @@ interface IteratorExecutionContext<I, O> {
 function getLength (iterable: Iterable<Resolvable<any>>): number {
   let result
   if (iterable instanceof Array) {
-    result = (iterable).length
+    result = iterable.length
   } else {
     const iterator = iterable[Symbol.iterator]()
     let count = 0
@@ -178,17 +178,17 @@ export async function mapSeries<I, O> (
   const inflights: Array<Resolvable<O>> = []
   const output: O[] = []
 
-  let nextInput = iterator.next()
+  let nextItem = iterator.next()
   if (maxInflight < 2) {
     // Provides a higher performance implementation without push() and shift()
-    while (nextInput.done !== true) {
+    while (nextItem.done !== true) {
       const index = iteratedCount
       iteratedCount++
-      output.push(await mapper(await nextInput.value, index, inputLength))
-      nextInput = iterator.next()
+      output.push(await mapper(await nextItem.value, index, inputLength))
+      nextItem = iterator.next()
     }
   } else {
-    while (nextInput.done !== true) {
+    while (nextItem.done !== true) {
       const index = iteratedCount
       iteratedCount++
       if (inflights.length >= maxInflight) {
@@ -196,8 +196,8 @@ export async function mapSeries<I, O> (
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         output.push((await inflights.shift())!)
       }
-      inflights.push(mapper(await nextInput.value, index, inputLength))
-      nextInput = iterator.next()
+      inflights.push(mapper(await nextItem.value, index, inputLength))
+      nextItem = iterator.next()
     }
     while (inflights.length > 0) {
       // shift() will never return undefined because array length is checked
