@@ -2,8 +2,6 @@
 A utility for working with native JavaScript Promise. Aims to provide compatible
 [bluebird API] but on native Promise.
 
-This utility is currently work-in-progress.
-
 [![Version on npm]][native-promise-util]
 [![Build status]][Build workflow]
 
@@ -18,7 +16,8 @@ npm install native-promise-util
 The follow API are currently provided:
 - [promiseUtil.delay](./doc/delay.md)
 - [promiseUtil.map](./doc/map.md)
-- [promiseUtil.mapSeries](./doc/map-series.md)
+- [promiseUtil.mapSeries](./doc/map-series.md), with additional `inflight` options
+- [promiseUtil.each](./doc/each.md), with additional `inflight` options
 - [promiseUtil.filter](./doc/filter.md)
 
 
@@ -27,7 +26,7 @@ This module is licensed under the [MIT License](./LICENSE).
 
 
 ## Acknowledge
-This module was built by referencing the following material:
+This module was built by referencing the following materials:
 - Most API design and a lot of test cases are ported from [bluebird]().
 - `map` and `filter` API implementation are inspired by [a Gist][1] from [yongjun21].
 

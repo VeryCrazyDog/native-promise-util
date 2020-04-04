@@ -23,8 +23,19 @@ If, at any step:
 * The current element of the iteration is a *rejected* promise, the iteration will
   stop and be rejected as well (with the same reason).
 
-If all iterations resolve successfully, the `mapSeries` call resolves to a new array
+If all iterations resolve successfully, the `.mapSeries()` call resolves to a new array
 containing the results of each `mapper` execution, in order.
+
+`.mapSeries()` is very similar to [`.each()`](./each.md). The difference between
+`.each()` and `.mapSeries()` is their resolution value. `.mapSeries()` resolves with
+an array as explained above, while `.each()` resolves with an array containing the
+*resolved values of the input elements* (ignoring the outputs of the iteration steps).
+This way, `.each()` is meant to be mainly used for side-effect operations (since the
+outputs of the iterator are essentially discarded), just like the native `Array.forEach()`
+method of arrays, while `.map()` is meant to be used as an async version of the native
+`Array.map()` method of arrays.
+
+The `input` iterable is not modified.
 
 
 ## Map series option: inflight

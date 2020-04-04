@@ -7,6 +7,9 @@ export interface MapExecutionOptions {
 export interface MapSeriesExecutionOptions {
   inflight?: number
 }
+export interface EachExecutionOptions {
+  inflight?: number
+}
 export interface FilterExecutionOptions {
   concurrency?: number
 }
@@ -75,7 +78,7 @@ async function buildMapExecWorker<I, O> (
  *
  * *The `input` iterable is not modified.*
  *
- * @param input Iterable of values to pass to `mapper` function.
+ * @param input Iterable of resolvable values to pass to `mapper` function.
  * @param mapper A function which map values returned by iterable to return value.
  */
 export async function map<I, O> (
@@ -89,7 +92,7 @@ export async function map<I, O> (
  *
  * *The `input` iterable is not modified.*
  *
- * @param input Iterable of values to pass to `mapper` function.
+ * @param input Iterable of resolvable values to pass to `mapper` function.
  * @param mapper A function which map values returned by iterable to return value.
  * @param options.concurrency Maximum number of concurrency that can be executed at the same time.
  */
@@ -135,7 +138,7 @@ export async function map<I, O> (
  *
  * *The `input` iterable is not modified.*
  *
- * @param input Iterable of values to pass to `mapper` function.
+ * @param input Iterable of resolvable values to pass to `mapper` function.
  * @param mapper A function which map values returned by iterable to return value.
  */
 export async function mapSeries<I, O> (
@@ -145,12 +148,12 @@ export async function mapSeries<I, O> (
 
 /**
  * Returns a promise that returns an array of resolved mapped values from `input` iterable
- * using the given `mapper` function. Execution is started in series with a maximum number of
- * inflight limit.
+ * using the given `mapper` function. `mapper` function execution is started in series
+ * with a maximum number of executing limit.
  *
  * *The `input` iterable is not modified.*
  *
- * @param input Iterable of values to pass to `mapper` function.
+ * @param input Iterable of resolvable values to pass to `mapper` function.
  * @param mapper A function which map values returned by iterable to return value.
  * @param options.inflight Maximum number of inflight limit that can be executed at the same time.
  */
@@ -208,6 +211,85 @@ export async function mapSeries<I, O> (
   return output
 }
 
+/**
+ * Returns a promise that returns an array of resolved values from `input` iterable.
+ * Each resolved value are passed to `iterator` function in series for execution.
+ *
+ * *The `input` iterable is not modified.*
+ *
+ * @param input Iterable of resolvable values to pass to `iterator` function.
+ * @param iterator A function which will be executed on the resolved value from `input` iterable.
+ */
+export async function each<T> (
+  input: Resolvable<Iterable<Resolvable<T>>>,
+  iterator: IterateFunction<T, void>
+): Promise<T[]>;
+
+/**
+ * Returns a promise that returns an array of resolved values from `input` iterable.
+ * Each resolved value are passed to `iterator` function in series for async execution
+ * with a maximum number of `options.inflight` async execution limit.
+ *
+ * *The `input` iterable is not modified.*
+ *
+ * @param input Iterable of resolvable values to pass to `iterator` function.
+ * @param iterator A function which will be executed on the resolved value from `input` iterable.
+ * @param options.inflight Maximum number of inflight limit that can be executed at the same time.
+ */
+export async function each<T> (
+  input: Resolvable<Iterable<Resolvable<T>>>,
+  iterator: IterateFunction<T, void>,
+  options: EachExecutionOptions
+): Promise<T[]>;
+
+export async function each<T> (
+  input: Resolvable<Iterable<Resolvable<T>>>,
+  iterator: IterateFunction<T, void>,
+  options?: EachExecutionOptions
+): Promise<T[]> {
+  options = options ?? {}
+  let maxInflight = options.inflight ?? 1
+  if (maxInflight < 1) {
+    maxInflight = 1
+  }
+
+  const resolvedInput = await input
+  const inputLength = getLength(resolvedInput)
+  const inputIterator = resolvedInput[Symbol.iterator]()
+  let iteratedCount = 0
+  const inflights: Array<Resolvable<void>> = []
+  const output: T[] = []
+
+  let nextItem = inputIterator.next()
+  if (maxInflight < 2) {
+    // Provides a higher performance implementation without push() and shift()
+    while (nextItem.done !== true) {
+      const index = iteratedCount
+      iteratedCount++
+      const resolvedItem = await nextItem.value
+      await iterator(resolvedItem, index, inputLength)
+      output.push(resolvedItem)
+      nextItem = inputIterator.next()
+    }
+  } else {
+    while (nextItem.done !== true) {
+      const index = iteratedCount
+      iteratedCount++
+      if (inflights.length >= maxInflight) {
+        await inflights.shift()
+      }
+      const resolvedItem = await nextItem.value
+      inflights.push(iterator(resolvedItem, index, inputLength))
+      output.push(resolvedItem)
+      nextItem = inputIterator.next()
+    }
+    while (inflights.length > 0) {
+      await inflights.shift()
+    }
+  }
+  return output
+}
+
 async function buildFilterExecWorker<T> (
   context: IteratorExecutionContext<T, T>,
   filterer: IterateFunction<T, boolean>
@@ -233,7 +315,7 @@ async function buildFilterExecWorker<T> (
  *
  * *The `input` iterable is not modified.*
  *
- * @param input Iterable of values to pass to `filterer` function.
+ * @param input Iterable of resolvable values to pass to `filterer` function.
  * @param filterer A function which return true for filter in values returned by iterable.
  */
 export async function filter<T> (
@@ -248,7 +330,7 @@ export async function filter<T> (
  *
  * *The `input` iterable is not modified.*
  *
- * @param input Iterable of values to pass to `mapper` function.
+ * @param input Iterable of resolvable values to pass to `mapper` function.
  * @param filterer A function which return true for filter in values returned by iterable.
  * @param options.concurrency Maximum number of concurrency that can be executed at the same time.
  */

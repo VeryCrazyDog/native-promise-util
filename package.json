@@ -40,6 +40,7 @@
 		"bluebird",
 		"map",
 		"mapSeries",
+		"each",
 		"filter",
 		"inflight"
 	]
