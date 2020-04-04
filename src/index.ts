@@ -7,6 +7,9 @@ export interface MapExecutionOptions {
 export interface MapSeriesExecutionOptions {
   inflight?: number
 }
+export interface EachExecutionOptions {
+  inflight?: number
+}
 export interface FilterExecutionOptions {
   concurrency?: number
 }
@@ -203,6 +206,54 @@ export async function mapSeries<I, O> (
       // shift() will never return undefined because array length is checked
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       output.push((await inflights.shift())!)
+    }
+  }
+  return output
+}
+
+export async function each<T> (
+  input: Resolvable<Iterable<Resolvable<T>>>,
+  iterator: IterateFunction<T, void>,
+  options?: EachExecutionOptions
+): Promise<T[]> {
+  options = options ?? {}
+  let maxInflight = options.inflight ?? 1
+  if (maxInflight < 1) {
+    maxInflight = 1
+  }
+
+  const resolvedInput = await input
+  const inputLength = getLength(resolvedInput)
+  const inputIterator = resolvedInput[Symbol.iterator]()
+  let iteratedCount = 0
+  const inflights: Array<Resolvable<void>> = []
+  const output: T[] = []
+
+  let nextItem = inputIterator.next()
+  if (maxInflight < 2) {
+    // Provides a higher performance implementation without push() and shift()
+    while (nextItem.done !== true) {
+      const index = iteratedCount
+      iteratedCount++
+      const resolvedItem = await nextItem.value
+      await iterator(resolvedItem, index, inputLength)
+      output.push(resolvedItem)
+      nextItem = inputIterator.next()
+    }
+  } else {
+    while (nextItem.done !== true) {
+      const index = iteratedCount
+      iteratedCount++
+      if (inflights.length >= maxInflight) {
+        await inflights.shift()
+      }
+      const resolvedItem = await nextItem.value
+      inflights.push(iterator(resolvedItem, index, inputLength))
+      output.push(resolvedItem)
+      nextItem = inputIterator.next()
+    }
+    while (inflights.length > 0) {
+      await inflights.shift()
     }
   }
   return output
