@@ -6,6 +6,10 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.4.1] - 2020-04-04
+### Fixed
+- Fix incorrect link in README.
+
 ## [0.4.0] - 2020-04-04
 ### Added
 - Added `.mapSeries()` and `.each()` API.
@@ -28,7 +32,8 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 
 
-[Unreleased]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.4.0...HEAD
+[Unreleased]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.4.1...HEAD
+[0.4.1]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.2.0...0.3.0
 [0.2.0]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.1.1...0.2.0
