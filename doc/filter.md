@@ -10,11 +10,9 @@ async function filter(
 ): Promise<any[]>
 ```
 
-Given a finite [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols)
-(arrays are `Iterable`), or a promise of an `Iterable`, which produces promises
+Given a finite [`Iterable`][1] (arrays are `Iterable`), or a promise of an `Iterable`, which produces promises
 (or a mix of promises and values), iterate over all the values in the `Iterable`
-into an array and [filter the array to another](http://en.wikipedia.org/wiki/Filter_\(higher-order_function\))
-using the given `filterer` function.
+into an array and [filter the array to another][2] using the given `filterer` function.
 
 The `input` iterable is not modified.
 
@@ -36,3 +34,8 @@ const promiseUtil = require('native-promise-util')
   console.log(output)
 })()
 ```
+
+
+
+[1]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols
+[2]: http://en.wikipedia.org/wiki/Filter_%28higher-order_function%29

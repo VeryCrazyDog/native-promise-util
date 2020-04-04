@@ -10,11 +10,9 @@ async function map(
 ): Promise<any[]>
 ```
 
-Given a finite [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols)
-(arrays are `Iterable`), or a promise of an `Iterable`, which produces promises
+Given a finite [`Iterable`][1] (arrays are `Iterable`), or a promise of an `Iterable`, which produces promises
 (or a mix of promises and values), iterate over all the values in the `Iterable`
-into an array and [map the array to another](http://en.wikipedia.org/wiki/Map_\(higher-order_function\))
-using the given `mapper` function.
+into an array and [map the array to another] using the given `mapper` function.
 
 Promises returned by the `mapper` function are awaited for and the returned promise
 doesn't fulfill until all mapped promises have fulfilled as well. If any promise in
@@ -34,7 +32,7 @@ the original `input` order.
 You may optionally specify a concurrency limit:
 
 ```js
-promiseUtil.map(..., {concurrency: 3});
+promiseUtil.map(..., { concurrency: 3 });
 ```
 
 The concurrency limit applies to Promises returned by the mapper function and it basically
@@ -62,3 +60,8 @@ const promiseUtil = require('native-promise-util')
   console.log(finishedList)
 })()
 ```
+
+
+
+[1]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols
+[2]: https://en.wikipedia.org/wiki/Map_%28higher-order_function%29
