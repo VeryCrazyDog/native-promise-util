@@ -129,6 +129,37 @@ export async function map<I, O> (
   return context.output
 }
 
+/**
+ * Returns a promise that returns an array of resolved mapped values from `input` iterable
+ * using the given `mapper` function executed in series.
+ *
+ * *The `input` iterable is not modified.*
+ *
+ * @param input Iterable of values to pass to `mapper` function.
+ * @param mapper A function which map values returned by iterable to return value.
+ */
+export async function mapSeries<I, O> (
+  input: Resolvable<Iterable<Resolvable<I>>>,
+  mapper: IterateFunction<I, O>
+): Promise<O[]>;
+
+/**
+ * Returns a promise that returns an array of resolved mapped values from `input` iterable
+ * using the given `mapper` function. Execution is started in series with a maximum number of
+ * inflight limit.
+ *
+ * *The `input` iterable is not modified.*
+ *
+ * @param input Iterable of values to pass to `mapper` function.
+ * @param mapper A function which map values returned by iterable to return value.
+ * @param options.inflight Maximum number of inflight limit that can be executed at the same time.
+ */
+export async function mapSeries<I, O> (
+  input: Resolvable<Iterable<Resolvable<I>>>,
+  mapper: IterateFunction<I, O>,
+  options: MapSeriesExecutionOptions
+): Promise<O[]>;
+
 export async function mapSeries<I, O> (
   input: Resolvable<Iterable<Resolvable<I>>>,
   mapper: IterateFunction<I, O>,

@@ -39,6 +39,8 @@
 		"promise",
 		"bluebird",
 		"map",
-		"filter"
+		"mapSeries",
+		"filter",
+		"inflight"
 	]
 }

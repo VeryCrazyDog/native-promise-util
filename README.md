@@ -18,11 +18,12 @@ npm install native-promise-util
 The follow API are currently provided:
 - [promiseUtil.delay](./doc/delay.md)
 - [promiseUtil.map](./doc/map.md)
+- [promiseUtil.mapSeries](./doc/map-series.md)
 - [promiseUtil.filter](./doc/filter.md)
 
 
 ## License
-This demo is licensed under the [MIT License](LICENSE).
+This module is licensed under the [MIT License](LICENSE).
 
 
 ## Acknowledge
