@@ -35,7 +35,7 @@ You may optionally specify a inflight limit:
 promiseUtil.mapSeries(..., { inflight: 3 });
 ```
 
-The inflight limit applies to promises returned by the mapper function and it basically
+The `inflight` limit applies to promises returned by the mapper function and it basically
 limits the number of promises created. For example, if `inflight` is `3` and the mapper
 callback has been called enough so that there are three returned promises currently pending,
 no further callbacks are called until the first of the pending promises in the queue resolves.

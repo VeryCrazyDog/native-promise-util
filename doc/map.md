@@ -35,7 +35,7 @@ You may optionally specify a concurrency limit:
 promiseUtil.map(..., { concurrency: 3 });
 ```
 
-The concurrency limit applies to Promises returned by the mapper function and it basically
+The `concurrency` limit applies to Promises returned by the mapper function and it basically
 limits the number of Promises created. For example, if `concurrency` is `3` and the mapper
 callback has been called enough so that there are three returned Promises currently pending,
 no further callbacks are called until one of the pending Promises resolves. So the mapper

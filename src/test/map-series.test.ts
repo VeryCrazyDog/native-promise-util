@@ -52,3 +52,85 @@ test('should start mapper in input order and end mapper in execution time order 
   t.deepEqual(beginMapperOrder, input)
   t.deepEqual(endMapperOrder, [0, 500, 100, 101, 300])
 })
+
+test('should not have more than {inflight} promises in flight', async (t) => {
+  type ResolveFunction = (value?: any) => void
+  interface Delayed {
+    promise: Promise<any>
+    resolve: ResolveFunction
+    index: number
+    resolved: boolean
+  }
+
+  const BATCH_SIZE = 5
+  const input: number[] = [30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
+  const finishedList: number[] = []
+
+  const immediates: Delayed[] = []
+  // Keep test case align with original
+  // eslint-disable-next-line @typescript-eslint/promise-function-async
+  function immediate (index: number): Promise<any> {
+    let resolveFunc: ResolveFunction = () => { }
+    const promise = new Promise(resolve => {
+      resolveFunc = resolve
+    })
+    immediates.push({
+      promise,
+      resolve: resolveFunc,
+      index,
+      resolved: false
+    })
+    // Keep test case align with original
+    // eslint-disable-next-line @typescript-eslint/return-await
+    return promise
+  }
+
+  const lates: Delayed[] = []
+  // Keep test case align with original
+  // eslint-disable-next-line @typescript-eslint/promise-function-async
+  function late (index: number): Promise<any> {
+    let resolveFunc: ResolveFunction = t.fail
+    const promise = new Promise(resolve => {
+      resolveFunc = resolve
+    })
+    lates.push({
+      promise,
+      resolve: resolveFunc,
+      index,
+      resolved: false
+    })
+    // Keep test case align with original
+    // eslint-disable-next-line @typescript-eslint/return-await
+    return promise
+  }
+
+  function resolveDelayed (delayed: Delayed): void {
+    if (!delayed.resolved) {
+      delayed.resolve(delayed.index)
+      delayed.resolved = true
+    }
+  }
+
+  const mapSeriesPromise = mapSeries(input, async (value, index) => {
+    await (index < BATCH_SIZE ? immediate(index) : late(index))
+    finishedList.push(value)
+  }, { inflight: BATCH_SIZE })
+
+  const crossCheckPromise = (async () => {
+    // Wait for map() to execute mapper and update output array
+    await delay(100)
+    t.is(finishedList.length, 0)
+    immediates.forEach(resolveDelayed)
+    // Wait for map() to execute mapper and update output array
+    await delay(100)
+    t.deepEqual(finishedList, [30, 31, 32, 33, 34])
+    lates.forEach(resolveDelayed)
+    // Wait for map() to execute mapper and update output array
+    await delay(100)
+    t.deepEqual(finishedList, [30, 31, 32, 33, 34, 35, 36, 37, 38, 39])
+    lates.forEach(resolveDelayed)
+    await mapSeriesPromise
+    t.deepEqual(input, finishedList)
+  })()
+  await Promise.all([mapSeriesPromise, crossCheckPromise])
+})
