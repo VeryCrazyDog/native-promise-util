@@ -42,11 +42,11 @@ Some alternatives and similar implementations which can be considered:
 [@vendredix/promise]: https://www.npmjs.com/package/@vendredix/promise
 [bluebird API]: http://bluebirdjs.com/docs/api-reference.html
 [bluebird]: http://bluebirdjs.com/
-[Build status]: https://img.shields.io/github/workflow/status/VeryCrazyDog/native-promise-util/Node.js%20CI
+[Build status]: https://github.com/VeryCrazyDog/native-promise-util/workflows/Node.js%20CI/badge.svg
 [Build workflow]: https://github.com/VeryCrazyDog/native-promise-util/actions?query=workflow%3A%22Node.js+CI%22
 [native-promise-util]: https://www.npmjs.com/package/native-promise-util
 [p-filter]: https://www.npmjs.com/package/p-filter
 [p-map]: https://www.npmjs.com/package/p-map
 [promise-fun]: https://github.com/sindresorhus/promise-fun#packages
-[Version on npm]: https://img.shields.io/npm/v/native-promise-util
+[Version on npm]: https://badgen.net/npm/v/native-promise-util
 [yongjun21]: https://github.com/yongjun21
