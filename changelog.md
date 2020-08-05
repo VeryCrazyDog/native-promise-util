@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.4.2] - 2020-08-05
 ### Added
 - Added `.d.ts` declaration files.
 
@@ -34,7 +36,8 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 
 
-[Unreleased]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.4.1...HEAD
+[Unreleased]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.4.2...HEAD
+[0.4.1]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.2.0...0.3.0
