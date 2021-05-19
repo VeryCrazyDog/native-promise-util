@@ -36,12 +36,13 @@
 		"url": "https://github.com/VeryCrazyDog/native-promise-util/issues"
 	},
 	"keywords": [
-		"promise",
 		"bluebird",
-		"map",
-		"mapSeries",
+		"concurrency",
 		"each",
 		"filter",
-		"inflight"
+		"inflight",
+		"map",
+		"mapSeries",
+		"promise"
 	]
 }
