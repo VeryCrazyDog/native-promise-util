@@ -291,8 +291,8 @@ test('should give correct iterable length to mapper on Array input', async t => 
 
 test('should give correct iterable length to mapper on custom iterable input', async t => {
   class SequenceIterator implements Iterator<number> {
-    private current: number;
-    private readonly max: number;
+    private current: number
+    private readonly max: number
 
     constructor (start: number, max?: number) {
       this.current = start

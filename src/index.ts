@@ -1,5 +1,5 @@
-export type Resolvable<R> = R | PromiseLike<R>;
-export type IterateFunction<I, O> = (item: I, index: number, length: number) => Resolvable<O>;
+export type Resolvable<R> = R | PromiseLike<R>
+export type IterateFunction<I, O> = (item: I, index: number, length: number) => Resolvable<O>
 
 export interface MapExecutionOptions {
   concurrency?: number
@@ -42,7 +42,7 @@ function getLength (iterable: Iterable<Resolvable<any>>): number {
  * Returns a promise that will be resolved to `undefined` after given `ms` milliseconds.
  * @param ms Time delay in milliseconds.
  */
-export async function delay (ms: number): Promise<undefined>;
+export async function delay (ms: number): Promise<undefined>
 
 /**
  * Returns a promise that will first resolve the `value`, then wait for given `ms` milliseconds
@@ -50,7 +50,7 @@ export async function delay (ms: number): Promise<undefined>;
  * @param ms Time delay in milliseconds.
  * @param value Value to be resolved to or a promise-like object to be fulfilled.
  */
-export async function delay<T> (ms: number, value: Resolvable<T>): Promise<T>;
+export async function delay<T> (ms: number, value: Resolvable<T>): Promise<T>
 
 export async function delay<T> (ms: number, value?: Resolvable<T>): Promise<T | undefined> {
   const result = await value
@@ -84,7 +84,7 @@ async function buildMapExecWorker<I, O> (
 export async function map<I, O> (
   input: Resolvable<Iterable<Resolvable<I>>>,
   mapper: IterateFunction<I, O>
-): Promise<O[]>;
+): Promise<O[]>
 
 /**
  * Returns a promise that returns an array of resolved mapped values from `input` iterable
@@ -101,15 +101,14 @@ export async function map<I, O> (
   input: Resolvable<Iterable<Resolvable<I>>>,
   mapper: IterateFunction<I, O>,
   options: MapExecutionOptions
-): Promise<O[]>;
+): Promise<O[]>
 
 export async function map<I, O> (
   input: Resolvable<Iterable<Resolvable<I>>>,
   mapper: IterateFunction<I, O>,
   options?: MapExecutionOptions
 ): Promise<O[]> {
-  options = options ?? {}
-  let availableConcurrency = options.concurrency ?? Infinity
+  let availableConcurrency = options?.concurrency ?? Infinity
   if (availableConcurrency < 1) {
     availableConcurrency = 1
   }
@@ -145,7 +144,7 @@ export async function map<I, O> (
 export async function mapSeries<I, O> (
   input: Resolvable<Iterable<Resolvable<I>>>,
   mapper: IterateFunction<I, O>
-): Promise<O[]>;
+): Promise<O[]>
 
 /**
  * Returns a promise that returns an array of resolved mapped values from `input` iterable
@@ -162,15 +161,14 @@ export async function mapSeries<I, O> (
   input: Resolvable<Iterable<Resolvable<I>>>,
   mapper: IterateFunction<I, O>,
   options: MapSeriesExecutionOptions
-): Promise<O[]>;
+): Promise<O[]>
 
 export async function mapSeries<I, O> (
   input: Resolvable<Iterable<Resolvable<I>>>,
   mapper: IterateFunction<I, O>,
   options?: MapSeriesExecutionOptions
 ): Promise<O[]> {
-  options = options ?? {}
-  let maxInflight = options.inflight ?? 1
+  let maxInflight = options?.inflight ?? 1
   if (maxInflight < 1) {
     maxInflight = 1
   }
@@ -224,7 +222,7 @@ export async function mapSeries<I, O> (
 export async function each<T> (
   input: Resolvable<Iterable<Resolvable<T>>>,
   iterator: IterateFunction<T, void>
-): Promise<T[]>;
+): Promise<T[]>
 
 /**
  * Returns a promise that returns an array of resolved values from `input` iterable.
@@ -241,15 +239,14 @@ export async function each<T> (
   input: Resolvable<Iterable<Resolvable<T>>>,
   iterator: IterateFunction<T, void>,
   options: EachExecutionOptions
-): Promise<T[]>;
+): Promise<T[]>
 
 export async function each<T> (
   input: Resolvable<Iterable<Resolvable<T>>>,
   iterator: IterateFunction<T, void>,
   options?: EachExecutionOptions
 ): Promise<T[]> {
-  options = options ?? {}
-  let maxInflight = options.inflight ?? 1
+  let maxInflight = options?.inflight ?? 1
   if (maxInflight < 1) {
     maxInflight = 1
   }
@@ -322,7 +319,7 @@ async function buildFilterExecWorker<T> (
 export async function filter<T> (
   input: Resolvable<Iterable<Resolvable<T>>>,
   filterer: IterateFunction<T, boolean>
-): Promise<T[]>;
+): Promise<T[]>
 
 /**
  * Returns a promise that returns an array of filtered resolved values from `input` iterable
@@ -340,15 +337,14 @@ export async function filter<T> (
   input: Resolvable<Iterable<Resolvable<T>>>,
   filterer: IterateFunction<T, boolean>,
   options: FilterExecutionOptions
-): Promise<T[]>;
+): Promise<T[]>
 
 export async function filter<T> (
   input: Resolvable<Iterable<Resolvable<T>>>,
   filterer: IterateFunction<T, boolean>,
   options?: FilterExecutionOptions
 ): Promise<T[]> {
-  options = options ?? {}
-  let availableConcurrency = options.concurrency ?? Infinity
+  let availableConcurrency = options?.concurrency ?? Infinity
   if (availableConcurrency < 1) {
     availableConcurrency = 1
   }
