@@ -25,6 +25,8 @@ function getLength (iterable: Iterable<Resolvable<any>>): number {
   let result
   if (iterable instanceof Array) {
     result = iterable.length
+  } else if (iterable instanceof Map || iterable instanceof Set) {
+    result = iterable.size
   } else {
     const iterator = iterable[Symbol.iterator]()
     let count = 0
