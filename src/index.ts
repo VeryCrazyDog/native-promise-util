@@ -94,7 +94,8 @@ export async function map<I, O> (
  *
  * @param input Iterable of resolvable values to pass to `mapper` function.
  * @param mapper A function which map values returned by iterable to return value.
- * @param options.concurrency Maximum number of concurrency that can be executed at the same time.
+ * @param options.concurrency Maximum number of concurrency that can be executed at
+ *   the same time. Default is `Infinity`.
  */
 export async function map<I, O> (
   input: Resolvable<Iterable<Resolvable<I>>>,
@@ -155,7 +156,7 @@ export async function mapSeries<I, O> (
  *
  * @param input Iterable of resolvable values to pass to `mapper` function.
  * @param mapper A function which map values returned by iterable to return value.
- * @param options.inflight Maximum number of inflight limit that can be executed at the same time.
+ * @param options.inflight Maximum number of inflight limit that can be executed at the same time. Default is `1`.
  */
 export async function mapSeries<I, O> (
   input: Resolvable<Iterable<Resolvable<I>>>,
@@ -234,7 +235,7 @@ export async function each<T> (
  *
  * @param input Iterable of resolvable values to pass to `iterator` function.
  * @param iterator A function which will be executed on the resolved value from `input` iterable.
- * @param options.inflight Maximum number of inflight limit that can be executed at the same time.
+ * @param options.inflight Maximum number of inflight limit that can be executed at the same time. Default is `1`.
  */
 export async function each<T> (
   input: Resolvable<Iterable<Resolvable<T>>>,
@@ -332,7 +333,8 @@ export async function filter<T> (
  *
  * @param input Iterable of resolvable values to pass to `mapper` function.
  * @param filterer A function which return true for filter in values returned by iterable.
- * @param options.concurrency Maximum number of concurrency that can be executed at the same time.
+ * @param options.concurrency Maximum number of concurrency that can be executed at
+ *   the same time. Default is `Infinity`.
  */
 export async function filter<T> (
   input: Resolvable<Iterable<Resolvable<T>>>,
