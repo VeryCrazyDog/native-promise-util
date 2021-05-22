@@ -2,7 +2,7 @@
 import test, { EitherMacro, ExecutionContext } from 'ava'
 
 // Import module to be tested
-import { delay, Resolvable } from '../index'
+import { delay, Resolvable, timeout } from '../index'
 
 // Private functions
 async function tryUntilAttempt<C, A> (t: ExecutionContext<C>, fn: EitherMacro<A[], C>, attempt: number): Promise<void> {
@@ -77,13 +77,12 @@ test("should resolve follower promise's value", async t => {
 
 // https://github.com/petkaantonov/bluebird/blob/49da1ac256c7ee0fb1e07679791399f24648b933/test/mocha/timers.js#L183
 test.skip('should reject with a custom error if an error was provided as a parameter', async t => {
-  // TODO To be implemented after `timeout` is implemented
-  // var err = Error("Testing Errors")
-  // return Promise.delay(1)
-  //     .timeout(10, err)
-  //     .caught(function(e){
-  //         assert(e === err);
-  //     });
+  const err = new Error('Testing Errors')
+  try {
+    await timeout(10, err, delay(1))
+  } catch (error) {
+    t.is(error, err)
+  }
 })
 
 test('should resolved to undefined when no value is passed', async t => {
