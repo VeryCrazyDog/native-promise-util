@@ -5,7 +5,7 @@ import test, { EitherMacro, ExecutionContext } from 'ava'
 import { delay } from '../index'
 
 // Private functions
-async function tryRepeat<C> (t: ExecutionContext<C>, fn: EitherMacro<undefined[], C>, attempt: number): Promise<void> {
+async function tryUntilAttempt<C, A> (t: ExecutionContext<C>, fn: EitherMacro<A[], C>, attempt: number): Promise<void> {
   for (let i = 1; i <= attempt; i++) {
     const tryResult = await t.try(fn)
     if (tryResult.passed) {
@@ -44,7 +44,7 @@ test('should resolved to undefined when no value is passed', async t => {
 
 test('should delay execution', async t => {
   const DELAY = 200
-  await tryRepeat(t, async tt => {
+  await tryUntilAttempt(t, async tt => {
     const startTime = process.hrtime.bigint()
     await delay(DELAY)
     const endTime = process.hrtime.bigint()
@@ -80,7 +80,7 @@ test('should resolved to KeyValuePair when promise of KeyValuePair is passed', a
 })
 
 test('should delay return after promise resolved', async t => {
-  await tryRepeat(t, async tt => {
+  await tryUntilAttempt(t, async tt => {
     const input = 'hello'
     const startTime = process.hrtime.bigint()
     const delayJob = new Promise<string>(resolve => {
