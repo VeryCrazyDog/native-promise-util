@@ -16,6 +16,6 @@ export async function delay<T> (ms: number, value: Resolvable<T>): Promise<T>
 
 export async function delay<T> (ms: number, value?: Resolvable<T>): Promise<T | undefined> {
   const result = await value
-  await new Promise(resolve => setTimeout(resolve, ms))
-  return result
+  // eslint-disable-next-line @typescript-eslint/return-await
+  return new Promise(resolve => setTimeout(resolve, ms, result))
 }
