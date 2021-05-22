@@ -75,10 +75,16 @@ export function timeout<T> (
       resolved = true
     }, ms)
     ;(async () => {
-      const resolvedValue = await value
-      clearTimeout(timer)
-      if (resolved) { return }
-      resolve(resolvedValue)
+      try {
+        const resolvedValue = await value
+        clearTimeout(timer)
+        if (resolved) { return }
+        resolve(resolvedValue)
+      } catch (error) {
+        clearTimeout(timer)
+        if (resolved) { return }
+        reject(error)
+      }
       resolved = true
     })().catch(() => {})
   })

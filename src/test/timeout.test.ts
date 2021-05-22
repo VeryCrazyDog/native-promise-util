@@ -12,7 +12,7 @@ test('should do nothing if the promise fulfills quickly', async t => {
 })
 
 // https://github.com/petkaantonov/bluebird/blob/49da1ac256c7ee0fb1e07679791399f24648b933/test/mocha/timers.js#L34
-test.failing('should do nothing if the promise rejects quickly', async t => {
+test('should do nothing if the promise rejects quickly', async t => {
   const goodError = new Error('haha!')
   try {
     await timeout(200, undefined, delay(1).then(() => {
