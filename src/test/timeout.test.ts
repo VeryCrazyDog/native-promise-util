@@ -14,13 +14,11 @@ test('should do nothing if the promise fulfills quickly', async t => {
 // https://github.com/petkaantonov/bluebird/blob/49da1ac256c7ee0fb1e07679791399f24648b933/test/mocha/timers.js#L34
 test('should do nothing if the promise rejects quickly', async t => {
   const goodError = new Error('haha!')
-  try {
+  await t.throwsAsync(async () => {
     await timeout(200, undefined, delay(1).then(() => {
       throw goodError
     }))
-  } catch (error) {
-    t.is(error, goodError)
-  }
+  }, { is: goodError })
 })
 
 // https://github.com/petkaantonov/bluebird/blob/49da1ac256c7ee0fb1e07679791399f24648b933/test/mocha/timers.js#L46
@@ -71,8 +69,26 @@ test('should not cancel the parent promise if there are multiple consumers', asy
 // https://github.com/petkaantonov/bluebird/blob/49da1ac256c7ee0fb1e07679791399f24648b933/test/mocha/timers.js#L183
 test('should reject with a custom error if an error was provided as a parameter', async t => {
   const err = new Error('Testing Errors')
-  const error = await t.throwsAsync(async () => {
+  await t.throwsAsync(async () => {
     await timeout(1, err, delay(100))
-  })
-  t.is(error, err)
+  }, { is: err })
+})
+
+test('should reject with a timeout error', async t => {
+  await t.throwsAsync(async () => {
+    await timeout(1)
+  }, { instanceOf: TimeoutError })
+})
+
+test('should reject with a custom timeout error', async t => {
+  await t.throwsAsync(async () => {
+    await timeout(1, 'custom')
+  }, { instanceOf: TimeoutError, message: 'custom' })
+})
+
+test('should reject with a custom error', async t => {
+  const err = new Error('Testing Errors')
+  await t.throwsAsync(async () => {
+    await timeout(1, err, delay(100))
+  }, { is: err })
 })
