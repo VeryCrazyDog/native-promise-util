@@ -17,10 +17,43 @@ function buildTimeoutError (messageOrError?: string | Error): Error {
   return err
 }
 
+// Returns a promise that will be fulfilled with `value` promise's fulfillment value or
+// rejection reason. However, if `value` promise is not fulfilled or rejected within
+// `ms` milliseconds, or if `value` promise is not provided and `ms` milliseconds passed,
+// the returned promise is rejected with a `TimeoutError` or the `error` as the reason.
+
+/**
+ * Returns a promise that will be fulfilled with `value` promise's fulfillment value or
+ * rejection reason. However, if `value` promise is not fulfilled or rejected within
+ * `ms` milliseconds, the returned promise is rejected with a `TimeoutError` using given
+ * `message` as the reason.
+ * @param ms Timeout in milliseconds.
+ * @param message Error message of the `TimeoutError` to be rejected with. Default is `operation timed out`.
+ * @param value Value to be resolved to or a promise-like object to be fulfilled.
+ */
+export async function timeout<T> (ms: number, message: string | undefined, value: Resolvable<T>): Promise<T>
+/**
+ * Returns a promise that will be fulfilled with `value` promise's fulfillment value or
+ * rejection reason. However, if `value` promise is not fulfilled or rejected within
+ * `ms` milliseconds, the returned promise is rejected with the given `error` as the reason.
+ * @param ms Timeout in milliseconds.
+ * @param error Error to be rejected with.
+ * @param value Value to be resolved to or a promise-like object to be fulfilled.
+ */
+export async function timeout<T> (ms: number, error: Error, value: Resolvable<T>): Promise<T>
+
+/**
+ * Returns a promise that will be rejected with `TimeoutError` after given `ms` milliseconds.
+ * @param ms Timeout in milliseconds.
+ * @param message Error message of the `TimeoutError` to be rejected with. Default is `operation timed out`.
+ */
 export async function timeout<T = never> (ms: number, message?: string): Promise<T>
-export async function timeout<T> (ms: number, message?: string, value?: Resolvable<T>): Promise<T>
-export async function timeout<T = never> (ms: number, error?: Error): Promise<T>
-export async function timeout<T> (ms: number, error?: Error, value?: Resolvable<T>): Promise<T>
+/**
+ * Returns a promise that will be rejected with given `error` after given `ms` milliseconds.
+ * @param ms Timeout in milliseconds.
+ * @param error Error to be rejected with.
+ */
+export async function timeout<T = never> (ms: number, error: Error): Promise<T>
 
 // eslint-disable-next-line @typescript-eslint/promise-function-async
 export function timeout<T> (
