@@ -1,4 +1,4 @@
-# promiseUtil.map
+# npu.map
 
 ```ts
 async function mapSeries (
@@ -43,7 +43,7 @@ The `input` iterable is not modified.
 You may optionally specify a inflight limit:
 
 ```js
-promiseUtil.mapSeries(..., { inflight: 3 });
+npu.mapSeries(..., { inflight: 3 });
 ```
 
 The `inflight` limit applies to promises returned by the mapper function and it basically
@@ -57,15 +57,15 @@ the first promise resolves.
 ## Example
 
 ```js
-const promiseUtil = require('native-promise-util')
+const npu = require('native-promise-util')
 
 ;(async () => {
   const input = [500, 0, 100, 300, 101]
   const beginMapperOrder = []
   const endMapperOrder = []
-  const output = await promiseUtil.mapSeries(input, async (item) => {
+  const output = await npu.mapSeries(input, async (item) => {
     beginMapperOrder.push(item)
-    await promiseUtil.delay(item)
+    await npu.delay(item)
     endMapperOrder.push(item)
     return item
   }, { inflight: 2 })

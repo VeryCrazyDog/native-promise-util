@@ -1,4 +1,4 @@
-# promiseUtil.map
+# npu.map
 
 ```ts
 async function map(
@@ -32,7 +32,7 @@ the original `input` order.
 You may optionally specify a concurrency limit:
 
 ```js
-promiseUtil.map(..., { concurrency: 3 });
+npu.map(..., { concurrency: 3 });
 ```
 
 The `concurrency` limit applies to Promises returned by the mapper function and it basically
@@ -46,13 +46,13 @@ of the Promises resolves.
 ## Example
 
 ```js
-const promiseUtil = require('native-promise-util')
+const npu = require('native-promise-util')
 
 ;(async () => {
   const input = [500, 0, 200, 200, 200]
   const finishedList = []
-  await promiseUtil.map(input, async item => {
-    await promiseUtil.delay(item)
+  await npu.map(input, async item => {
+    await npu.delay(item)
     finishedList.push(item)
     return item
   }, { concurrency: 2 })

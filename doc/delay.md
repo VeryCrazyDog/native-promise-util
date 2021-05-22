@@ -1,4 +1,4 @@
-# promiseUtil.delay
+# npu.delay
 
 ```ts
 async function delay(
@@ -16,12 +16,12 @@ rejected promise, the resulting promise will be rejected immediately.
 ## Example
 
 ```js
-const promiseUtil = require('native-promise-util')
+const npu = require('native-promise-util')
 
 ;(async () => {
-  await promiseUtil.delay(500)
+  await npu.delay(500)
   console.log('500 ms passed')
-  await promiseUtil.delay(500)
+  await npu.delay(500)
   console.log('another 500 ms passed')
 })()
 ```

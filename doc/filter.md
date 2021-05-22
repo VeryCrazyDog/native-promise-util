@@ -1,4 +1,4 @@
-# promiseUtil.map
+# npu.map
 
 ```ts
 async function filter(
@@ -25,11 +25,11 @@ See [Map option: concurrency](./map.md)
 ## Example
 
 ```js
-const promiseUtil = require('native-promise-util')
+const npu = require('native-promise-util')
 
 ;(async () => {
   const input = [4, 5, 1, 3, 2].map(i => Promise.resolve(i))
-  const output = await promiseUtil.filter(input, i => i > 2)
+  const output = await npu.filter(input, i => i > 2)
   // Print [ 4, 5, 3 ]
   console.log(output)
 })()

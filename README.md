@@ -14,11 +14,11 @@ npm install native-promise-util
 
 ## API
 The follow API are currently provided:
-- [promiseUtil.delay](./doc/delay.md)
-- [promiseUtil.map](./doc/map.md)
-- [promiseUtil.mapSeries](./doc/map-series.md), with additional `inflight` options
-- [promiseUtil.each](./doc/each.md), with additional `inflight` options
-- [promiseUtil.filter](./doc/filter.md)
+- [npu.delay](./doc/delay.md)
+- [npu.map](./doc/map.md)
+- [npu.mapSeries](./doc/map-series.md), with additional `inflight` options
+- [npu.each](./doc/each.md), with additional `inflight` options
+- [npu.filter](./doc/filter.md)
 
 
 ## License

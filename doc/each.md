@@ -1,4 +1,4 @@
-# promiseUtil.each
+# npu.each
 
 ```ts
 async function each (
@@ -43,15 +43,15 @@ See [Map series option: inflight](./map-series.md)
 ## Example
 
 ```js
-const promiseUtil = require('native-promise-util')
+const npu = require('native-promise-util')
 
 ;(async () => {
   const input = [500, 0, 100, 300, 101]
   const beginMapperOrder = []
   const endMapperOrder = []
-  const output = await promiseUtil.each(input, async (item) => {
+  const output = await npu.each(input, async (item) => {
     beginMapperOrder.push(item)
-    await promiseUtil.delay(item)
+    await npu.delay(item)
     endMapperOrder.push(item)
   }, { inflight: 2 })
   // Print [ 500, 0, 100, 300, 101 ]
