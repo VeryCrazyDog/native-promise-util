@@ -2,7 +2,7 @@
 import test, { EitherMacro, ExecutionContext } from 'ava'
 
 // Import module to be tested
-import { delay } from '../index'
+import { delay, Resolvable } from '../index'
 
 // Private functions
 async function tryUntilAttempt<C, A> (t: ExecutionContext<C>, fn: EitherMacro<A[], C>, attempt: number): Promise<void> {
@@ -37,6 +37,55 @@ function assertExecTimeAround (t: ExecutionContext, execTime: number, startTime:
 }
 
 // Test cases
+// https://github.com/petkaantonov/bluebird/blob/49da1ac256c7ee0fb1e07679791399f24648b933/test/mocha/timers.js#L148
+test('should not delay rejection', async t => {
+  let isDone = false
+  // Keep test case align with original
+  // eslint-disable-next-line prefer-promise-reject-errors
+  const promise = delay(1, Promise.reject(5))
+  promise.then(t.fail.bind(t), () => {}).finally(() => {
+    isDone = true
+  })
+  await delay(1)
+  t.is(isDone, true)
+})
+
+// https://github.com/petkaantonov/bluebird/blob/49da1ac256c7ee0fb1e07679791399f24648b933/test/mocha/timers.js#L158
+test('should delay after resolution', async t => {
+  const promise1 = delay(1, 'what')
+  const promise2 = delay(1, promise1)
+  const value = await promise2
+  t.is(value, 'what')
+})
+
+// https://github.com/petkaantonov/bluebird/blob/49da1ac256c7ee0fb1e07679791399f24648b933/test/mocha/timers.js#L167
+test("should resolve follower promise's value", async t => {
+  let resolveFn: undefined | ((value: Resolvable<number>) => void)
+  const promise1 = new Promise<number>(resolve => {
+    resolveFn = resolve
+  })
+  const promise2 = new Promise<number>(resolve => {
+    setTimeout(() => {
+      resolve(3)
+    }, 1)
+  })
+  if (resolveFn === undefined) { t.fail(); return }
+  resolveFn(promise2)
+  const value = await delay(1, promise1)
+  t.is(value, 3)
+})
+
+// https://github.com/petkaantonov/bluebird/blob/49da1ac256c7ee0fb1e07679791399f24648b933/test/mocha/timers.js#L183
+test.skip('should reject with a custom error if an error was provided as a parameter', async t => {
+  // TODO To be implemented after `timeout` is implemented
+  // var err = Error("Testing Errors")
+  // return Promise.delay(1)
+  //     .timeout(10, err)
+  //     .caught(function(e){
+  //         assert(e === err);
+  //     });
+})
+
 test('should resolved to undefined when no value is passed', async t => {
   const output = await delay(1)
   t.is(output, undefined)
