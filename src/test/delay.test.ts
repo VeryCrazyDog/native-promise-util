@@ -75,17 +75,6 @@ test("should resolve follower promise's value", async t => {
   t.is(value, 3)
 })
 
-// https://github.com/petkaantonov/bluebird/blob/49da1ac256c7ee0fb1e07679791399f24648b933/test/mocha/timers.js#L183
-test.skip('should reject with a custom error if an error was provided as a parameter', async t => {
-  // TODO To be implemented after `timeout` is implemented
-  // var err = Error("Testing Errors")
-  // return Promise.delay(1)
-  //     .timeout(10, err)
-  //     .caught(function(e){
-  //         assert(e === err);
-  //     });
-})
-
 test('should resolved to undefined when no value is passed', async t => {
   const output = await delay(1)
   t.is(output, undefined)
