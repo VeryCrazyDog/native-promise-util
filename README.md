@@ -1,4 +1,4 @@
-# native-promise-util
+# native-promise-util (npu)
 A utility for working with native JavaScript Promise. Aims to provide compatible
 [bluebird API] but on native Promise.
 
@@ -15,11 +15,11 @@ npm install native-promise-util
 ## API
 The follow API are currently provided:
 - [npu.delay](./doc/delay.md)
-- [npu.map](./doc/map.md)
-- [npu.mapSeries](./doc/map-series.md), with additional `inflight` options
 - [npu.each](./doc/each.md), with additional `inflight` options
 - [npu.filter](./doc/filter.md)
-
+- [npu.map](./doc/map.md)
+- [npu.mapSeries](./doc/map-series.md), with additional `inflight` options
+- [npu.timeout](./doc/timeout.md)
 
 ## License
 This module is licensed under the [MIT License](./LICENSE).
@@ -33,17 +33,21 @@ This module was built by referencing the following materials:
 
 ## Alternatives
 Some alternatives and similar implementations which can be considered:
-- [promise-fun], which is a collection of separated modules including [p-map], [p-filter] and more
+- [async]
+- [modern-async]
 - [@vendredix/promise]
+- [promise-fun], which is a collection of separated modules including [p-map], [p-filter] and more
 
 
 
 [1]: https://gist.github.com/yongjun21/ec0ea757b9dcbf972a351453755cadcb
 [@vendredix/promise]: https://www.npmjs.com/package/@vendredix/promise
+[async]: https://www.npmjs.com/package/async
 [bluebird API]: http://bluebirdjs.com/docs/api-reference.html
 [bluebird]: http://bluebirdjs.com/
 [Build status]: https://github.com/VeryCrazyDog/native-promise-util/workflows/Node.js%20CI/badge.svg
 [Build workflow]: https://github.com/VeryCrazyDog/native-promise-util/actions?query=workflow%3A%22Node.js+CI%22
+[modern-async]: https://www.npmjs.com/package/modern-async
 [native-promise-util]: https://www.npmjs.com/package/native-promise-util
 [p-filter]: https://www.npmjs.com/package/p-filter
 [p-map]: https://www.npmjs.com/package/p-map
