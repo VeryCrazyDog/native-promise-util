@@ -40,7 +40,7 @@ Some alternatives and similar implementations which can be considered:
 
 
 
-[1]: https://gist.github.com/yongjun21/ec0ea757b9dcbf972a351453755cadcb
+[1]: https://gist.github.com/yongjun21/ec0ea757b9dcbf972a351453755cadcb/e75a7c54b75aa09fd1f8c3d8e73906e35105c9cc
 [@vendredix/promise]: https://www.npmjs.com/package/@vendredix/promise
 [async]: https://www.npmjs.com/package/async
 [bluebird API]: http://bluebirdjs.com/docs/api-reference.html
