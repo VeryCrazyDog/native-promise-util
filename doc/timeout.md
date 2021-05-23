@@ -30,16 +30,17 @@ Since [bluebird cancellation](1) is not supported. `value` promise will still be
 ```js
 const npu = require('native-promise-util')
 
-async function fakeReadFile() {
+async function fakeReadFile () {
   return await npu.delay(500, 'This is file content')
 }
 
 ;(async () => {
   try {
     const fileContents = await npu.timeout(100, undefined, fakeReadFile())
+    console.log(fileContents)
   } catch (error) {
     if (error instanceof npu.TimeoutError) {
-      console.log("could not read file within 100ms");
+      console.log('Could not read file within 100ms')
     } else {
       throw error
     }
