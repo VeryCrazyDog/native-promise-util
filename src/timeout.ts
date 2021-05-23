@@ -31,7 +31,7 @@ function buildTimeoutError (messageOrError?: string | Error): Error {
  * @param message Error message of the `TimeoutError` to be rejected with. Default is `operation timed out`.
  * @param value Value to be resolved to or a promise-like object to be fulfilled.
  */
-export async function timeout<T> (ms: number, message: string | undefined, value: Resolvable<T>): Promise<T>
+export function timeout<T> (ms: number, message: string | undefined, value: Resolvable<T>): Promise<T>
 /**
  * Returns a promise that will be fulfilled with `value` promise's fulfillment value or
  * rejection reason. However, if `value` promise is not fulfilled or rejected within
@@ -40,20 +40,20 @@ export async function timeout<T> (ms: number, message: string | undefined, value
  * @param error Error to be rejected with.
  * @param value Value to be resolved to or a promise-like object to be fulfilled.
  */
-export async function timeout<T> (ms: number, error: Error, value: Resolvable<T>): Promise<T>
+export function timeout<T> (ms: number, error: Error, value: Resolvable<T>): Promise<T>
 
 /**
  * Returns a promise that will be rejected with `TimeoutError` after given `ms` milliseconds.
  * @param ms Timeout in milliseconds.
  * @param message Error message of the `TimeoutError` to be rejected with. Default is `operation timed out`.
  */
-export async function timeout<T = never> (ms: number, message?: string): Promise<T>
+export function timeout<T = never> (ms: number, message?: string): Promise<T>
 /**
  * Returns a promise that will be rejected with given `error` after given `ms` milliseconds.
  * @param ms Timeout in milliseconds.
  * @param error Error to be rejected with.
  */
-export async function timeout<T = never> (ms: number, error: Error): Promise<T>
+export function timeout<T = never> (ms: number, error: Error): Promise<T>
 
 // eslint-disable-next-line @typescript-eslint/promise-function-async
 export function timeout<T> (
@@ -68,24 +68,18 @@ export function timeout<T> (
     }, ms))
   }
   return new Promise<T>((resolve, reject) => {
-    let resolved = false
     const timer = setTimeout(() => {
-      if (resolved) { return }
       reject(buildTimeoutError(messageOrError))
-      resolved = true
     }, ms)
     ;(async () => {
       try {
         const resolvedValue = await value
-        clearTimeout(timer)
-        if (resolved) { return }
         resolve(resolvedValue)
       } catch (error) {
-        clearTimeout(timer)
-        if (resolved) { return }
         reject(error)
+      } finally {
+        clearTimeout(timer)
       }
-      resolved = true
     })().catch(() => {})
   })
 }
