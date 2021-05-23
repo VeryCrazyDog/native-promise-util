@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.5.0] - 2021-05-23
 ### Added
 - Added `.timeout()` API.
 
@@ -42,8 +44,9 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 
 
-[Unreleased]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.4.2...HEAD
-[0.4.1]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.4.1...0.4.2
+[Unreleased]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.5.0...HEAD
+[0.5.0]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.4.2...0.5.0
+[0.4.2]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/VeryCrazyDog/native-promise-util/compare/0.2.0...0.3.0
