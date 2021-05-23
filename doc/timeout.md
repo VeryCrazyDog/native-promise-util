@@ -22,7 +22,7 @@ the returned promise is rejected with a `TimeoutError` or the `error` as the rea
 
 When using the first signature, you may specify a custom error message with the `message` parameter.
 
-Since [bluebird cancellation](1) is not supported. `value` promise will still be settled.
+Since [bluebird cancellation][1] is not supported. `value` promise will still be settled.
 
 
 ## Example
