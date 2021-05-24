@@ -21,6 +21,7 @@ The follow API are currently provided:
 - [npu.mapSeries](./doc/map-series.md), with additional `inflight` options
 - [npu.timeout](./doc/timeout.md)
 
+
 ## License
 This module is licensed under the [MIT License](./LICENSE).
 
