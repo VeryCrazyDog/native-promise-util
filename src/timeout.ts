@@ -1,4 +1,4 @@
-import { Resolvable } from './types'
+import type { Resolvable } from './types'
 import { TimeoutError } from './errors'
 
 const ERRMSG_TIMEOUT_ERROR = 'operation timed out'

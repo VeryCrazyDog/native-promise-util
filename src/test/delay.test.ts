@@ -1,8 +1,10 @@
 // Import 3rd party modules
-import test, { EitherMacro, ExecutionContext } from 'ava'
+import type { EitherMacro, ExecutionContext } from 'ava'
+import test from 'ava'
 
 // Import module to be tested
-import { delay, Resolvable } from '../index'
+import type { Resolvable } from '../index'
+import { delay } from '../index'
 
 // Private functions
 async function tryUntilAttempt<C, A> (t: ExecutionContext<C>, fn: EitherMacro<A[], C>, attempt: number): Promise<void> {

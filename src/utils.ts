@@ -1,4 +1,4 @@
-import { Resolvable } from './types'
+import type { Resolvable } from './types'
 
 export function getLength (iterable: Iterable<Resolvable<any>>): number {
   let result

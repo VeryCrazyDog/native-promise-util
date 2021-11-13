@@ -1,5 +1,6 @@
 // Import 3rd party modules
-import test, { ExecutionContext } from 'ava'
+import type { ExecutionContext } from 'ava'
+import test from 'ava'
 
 // Import module to be tested
 import { delay, filter } from '../index'

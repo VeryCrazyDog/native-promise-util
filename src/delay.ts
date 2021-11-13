@@ -1,4 +1,4 @@
-import { Resolvable } from './types'
+import type { Resolvable } from './types'
 
 /**
  * Returns a promise that will be resolved to `undefined` after given `ms` milliseconds.

@@ -1,5 +1,6 @@
 // Import 3rd party modules
-import anyTest, { TestInterface } from 'ava'
+import type { TestInterface } from 'ava'
+import anyTest from 'ava'
 
 // Import module to be tested
 import { delay, timeout } from '../index'

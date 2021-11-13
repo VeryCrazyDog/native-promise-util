@@ -1,4 +1,4 @@
-import {
+import type {
   IterateFunction,
   Resolvable
 } from './types'
