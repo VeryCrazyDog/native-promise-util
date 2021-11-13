@@ -3,22 +3,21 @@
 	"version": "0.5.0",
 	"description": "Utility for working with native Promise",
 	"engines": {
-		"node": ">= 10.*"
+		"node": ">= 10"
 	},
 	"main": "dist/index.js",
-	"dependencies": {},
 	"devDependencies": {
 		"@types/node": "^10.17.60",
-		"@typescript-eslint/eslint-plugin": "4.x",
-		"ava": "3.x",
-		"eslint": "7.x",
-		"eslint-config-standard-with-typescript": "20.x",
-		"eslint-plugin-import": "2.x",
-		"eslint-plugin-node": "11.x",
-		"eslint-plugin-promise": "4.x",
+		"@typescript-eslint/eslint-plugin": "^4.33.0",
+		"ava": "^3.15.0",
+		"eslint": "^7.32.0",
+		"eslint-config-standard-with-typescript": "^21.0.1",
+		"eslint-plugin-import": "^2.25.3",
+		"eslint-plugin-node": "^11.1.0",
+		"eslint-plugin-promise": "^5.1.1",
 		"shx": "^0.3.3",
-		"ts-node": "9.x",
-		"typescript": "4.2.x"
+		"ts-node": "^10.4.0",
+		"typescript": "^4.4.4"
 	},
 	"scripts": {
 		"lint": "eslint *.cjs . || cd .",
