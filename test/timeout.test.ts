@@ -30,10 +30,9 @@ test('should reject with a timeout error if the promise is too slow', async t =>
 
 // https://github.com/petkaantonov/bluebird/blob/49da1ac256c7ee0fb1e07679791399f24648b933/test/mocha/timers.js#L53
 test('should reject with a custom timeout error if the promise is too slow and msg was provided', async t => {
-  const error = await t.throwsAsync(async () => {
+  await t.throwsAsync(async () => {
     await timeout(1, 'custom', delay(100))
-  }, { instanceOf: TimeoutError })
-  t.regex(error.message, /custom/i)
+  }, { instanceOf: TimeoutError, message: /custom/i })
 })
 
 // We did not support cancellation, so no cancel is expected

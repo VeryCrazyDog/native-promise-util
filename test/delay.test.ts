@@ -1,5 +1,5 @@
 // Import 3rd party modules
-import type { EitherMacro, ExecutionContext } from 'ava'
+import type { ExecutionContext, Implementation } from 'ava'
 import test from 'ava'
 
 // Import module to be tested
@@ -7,7 +7,11 @@ import type { Resolvable } from '../src/index'
 import { delay } from '../src/index'
 
 // Private functions
-async function tryUntilAttempt<C, A> (t: ExecutionContext<C>, fn: EitherMacro<A[], C>, attempt: number): Promise<void> {
+async function tryUntilAttempt<A extends unknown, C = unknown> (
+  t: ExecutionContext<C>,
+  fn: Implementation<A[], C>,
+  attempt: number
+): Promise<void> {
   for (let i = 1; i <= attempt; i++) {
     const tryResult = await t.try(fn)
     if (tryResult.passed) {

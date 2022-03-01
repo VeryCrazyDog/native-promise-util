@@ -1,5 +1,5 @@
 // Import 3rd party modules
-import type { TestInterface } from 'ava'
+import type { TestFn } from 'ava'
 import anyTest from 'ava'
 
 // Import module to be tested
@@ -12,7 +12,7 @@ interface TestContext {
   expectedHandleType: any
 }
 
-const test = anyTest as TestInterface<TestContext>
+const test = anyTest as TestFn<TestContext>
 
 test.before(t => {
   // Keep test case align with original
