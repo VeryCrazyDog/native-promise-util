@@ -3,7 +3,7 @@ import type { ExecutionContext } from 'ava'
 import test from 'ava'
 
 // Import module to be tested
-import { delay, filter } from '../index'
+import { delay, filter } from '../src/index'
 
 // Variables
 const input: number[] = [1, 2, 3]

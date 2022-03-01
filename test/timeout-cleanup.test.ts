@@ -3,7 +3,7 @@ import type { TestInterface } from 'ava'
 import anyTest from 'ava'
 
 // Import module to be tested
-import { delay, timeout } from '../index'
+import { delay, timeout } from '../src/index'
 
 interface TestContext {
   globalObject: any

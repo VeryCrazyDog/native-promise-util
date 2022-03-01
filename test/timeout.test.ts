@@ -2,7 +2,7 @@
 import test from 'ava'
 
 // Import module to be tested
-import { TimeoutError, delay, timeout } from '../index'
+import { TimeoutError, delay, timeout } from '../src/index'
 
 // Test cases
 // https://github.com/petkaantonov/bluebird/blob/49da1ac256c7ee0fb1e07679791399f24648b933/test/mocha/timers.js#L29

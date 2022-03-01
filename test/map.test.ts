@@ -2,7 +2,7 @@
 import test from 'ava'
 
 // Import module to be tested
-import { delay, map } from '../index'
+import { delay, map } from '../src/index'
 
 // Variables
 const concurrency = { concurrency: 2 }

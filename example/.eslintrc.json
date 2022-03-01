@@ -1,0 +1,10 @@
+{
+	"rules": {
+		// Rules to avoid potential bugs and unintended behavior
+		"@typescript-eslint/no-shadow": "off",
+		"no-console": "off",
+		"no-shadow": [ "error", { "builtinGlobals": true } ],
+		// Coding style rules, can be removed based on personal preference
+		"@typescript-eslint/consistent-type-imports": "off"
+	}
+}
