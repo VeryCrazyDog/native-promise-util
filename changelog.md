@@ -7,6 +7,8 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Fixed
 - Fix `TimeoutError.name` from `Error` to `TimeoutError`.
+### Removed
+- Remove support on Node.js v10, v11, v13.
 
 ## [0.5.0] - 2021-05-23
 ### Added
