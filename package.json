@@ -22,10 +22,10 @@
 	"scripts": {
 		"lint": "eslint *.cjs src test example",
 		"fix": "eslint --fix *.cjs src test example",
-		"prebuild": "shx rm -rf dist",
+		"clean": "shx rm -rf dist",
 		"build": "tsc --build src",
 		"test": "ava",
-		"prepack": "npm run build"
+		"prepack": "npm run clean && npm run build"
 	},
 	"license": "MIT",
 	"author": "VCD <VeryCrazyDog@gmail.com>",
