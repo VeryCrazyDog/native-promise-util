@@ -8,7 +8,6 @@
 		"module": "CommonJS",
 		// Emit options
 		"declaration": true,
-		"sourceMap": true,
 		// Interop constraints options
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
