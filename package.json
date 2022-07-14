@@ -4,7 +4,7 @@
 	"description": "Utility for working with native Promise",
 	"engines": {
 		"node": ">= 12",
-		"npm": ">= 7"
+		"npm": ">= 8"
 	},
 	"main": "dist/index.js",
 	"devDependencies": {
