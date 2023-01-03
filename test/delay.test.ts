@@ -7,7 +7,7 @@ import type { Resolvable } from '../src/index'
 import { delay } from '../src/index'
 
 // Private functions
-async function tryUntilAttempt<A extends unknown, C = unknown> (
+async function tryUntilAttempt<A, C = unknown> (
   t: ExecutionContext<C>,
   fn: Implementation<A[], C>,
   attempt: number
@@ -82,6 +82,7 @@ test("should resolve follower promise's value", async t => {
 })
 
 test('should resolved to undefined when no value is passed', async t => {
+  // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
   const output = await delay(1)
   t.is(output, undefined)
 })

@@ -26,6 +26,8 @@ test.before(t => {
   // Keep test case align with original
   // eslint-disable-next-line @typescript-eslint/no-shadow
   const globalsAreReflectedInGlobalObject = (function (window: any): boolean {
+    // Keep test case align with original
+    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     const fn = function (id: any): void { return clearTimeout(id) }
     const old = window.clearTimeout
     window.clearTimeout = fn
