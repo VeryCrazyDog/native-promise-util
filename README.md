@@ -44,8 +44,8 @@ Some alternatives and similar implementations which can be considered:
 [@vendredix/promise]: https://www.npmjs.com/package/@vendredix/promise
 [bluebird API]: http://bluebirdjs.com/docs/api-reference.html
 [bluebird]: http://bluebirdjs.com/
-[Build status]: https://github.com/VeryCrazyDog/native-promise-util/workflows/Node.js%20CI/badge.svg
-[Build workflow]: https://github.com/VeryCrazyDog/native-promise-util/actions?query=workflow%3A%22Node.js+CI%22
+[Build status]: https://github.com/VeryCrazyDog/native-promise-util/workflows/CI/badge.svg
+[Build workflow]: https://github.com/VeryCrazyDog/native-promise-util/actions?query=workflow%3A%22CI%22
 [modern-async]: https://www.npmjs.com/package/modern-async
 [native-promise-util]: https://www.npmjs.com/package/native-promise-util
 [p-filter]: https://www.npmjs.com/package/p-filter
